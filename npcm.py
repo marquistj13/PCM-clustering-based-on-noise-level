@@ -212,7 +212,7 @@ class npcm():
             # self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(labels == cntr_index)
             # self.ita[cntr_index] = np.dot(dist_2_cntr, self.u[labels == cntr_index][:, cntr_index]) / np.sum(
             #     labels == cntr_index)
-            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.05,labels == cntr_index)
+            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.01,labels == cntr_index)
             dist_2_cntr = map(np.linalg.norm, self.x[samples_mask] - self.theta[cntr_index])
             self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(samples_mask)
 
