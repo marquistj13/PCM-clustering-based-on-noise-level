@@ -22,11 +22,6 @@ def _generateFig8():
     x0, y0 = make_blobs(n_samples=1000, n_features=2, centers=[[6, 2]], cluster_std=np.sqrt(10), random_state=45)
     x1, y1 = make_blobs(n_samples=1000, n_features=2, centers=[[20, 20]], cluster_std=np.sqrt(20),
                         random_state=45)
-    # cut a portion of the large cluster
-    mask = np.logical_and(np.logical_and(17 <= x1[:, 0], x1[:, 0] <= 23),
-                          np.logical_and(10 <= x1[:, 1], x1[:, 1] <= 19.5))
-    mask=np.logical_not(mask)
-    x1, y1 = x1[mask], y1[mask]
     x2, y2 = make_blobs(n_samples=200, n_features=2, centers=[[30, 10]], cluster_std=np.sqrt(1), random_state=45)
     noise_x = np.random.uniform(-18, 18, size=200)
     noise_y = np.random.uniform(-8, 35, size=200)
@@ -36,7 +31,7 @@ def _generateFig8():
     y2 += 2
     X = np.vstack((x0, x1, x2))
     y = np.hstack((y0, y1, y2))
-    noise_label = np.zeros((len(noise))) + 3
+    noise_label = np.zeros((len(noise)))+ 3
     # # Visualize the test data
     # fig0, ax0 = plt.subplots()
     # for label in range(3):
@@ -81,7 +76,7 @@ if __name__ == '__main__':
     tmp_video_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
     video_save_newFps_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
     clf = npcm(X, n_cluster, sigma_v, ax=ax, x_lim=(-20, 40), y_lim=(-10, 35), alpha_cut=alpha_cut,
-               ini_save_name=ini_save_name, last_frame_name=last_frame_name)
+                  ini_save_name=ini_save_name, last_frame_name=last_frame_name)
     # we should set "blit=False,repeat=False" or the program would fail. "init_func=clf.init_animation" plot the
     # background of each frame There is not much point to use blit=True, if most parts of your plot should be
     # refreshed. see http://stackoverflow.com/questions/14844223/python-matplotlib-blit-to-axes-or-sides-of-the
