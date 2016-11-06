@@ -70,7 +70,7 @@ if __name__ == '__main__':
     n_cluster, sigma_v, alpha_cut = 10, 1, 0.1
     n_cluster, sigma_v, alpha_cut = 10, 0.5, 0.1
     n_cluster, sigma_v, alpha_cut = 10, 1, 0.5
-    n_cluster, sigma_v, alpha_cut = 10, 1, 0.1
+    n_cluster, sigma_v, alpha_cut = 10, 1, 0.3
     ini_save_name = r".\video\fig8_ini_%d.png" % n_cluster
     last_frame_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (n_cluster, sigma_v, alpha_cut)
     tmp_video_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
