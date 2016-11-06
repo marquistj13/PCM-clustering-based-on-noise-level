@@ -37,7 +37,7 @@ def prepare_log():
 
 
 class npcm():
-    def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-7, maxiter=10000, ini_save_name="",
+    def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=10000, ini_save_name="",
                  last_frame_name=""):
         """
         :param X: scikit-learn form, i.e., pf shape (n_samples, n_features)
@@ -212,7 +212,7 @@ class npcm():
             # self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(labels == cntr_index)
             # self.ita[cntr_index] = np.dot(dist_2_cntr, self.u[labels == cntr_index][:, cntr_index]) / np.sum(
             #     labels == cntr_index)
-            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.05,labels == cntr_index)
+            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.01,labels == cntr_index)
             dist_2_cntr = map(np.linalg.norm, self.x[samples_mask] - self.theta[cntr_index])
             self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(samples_mask)
 
