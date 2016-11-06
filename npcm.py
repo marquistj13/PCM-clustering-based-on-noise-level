@@ -37,7 +37,7 @@ def prepare_log():
 
 
 class npcm():
-    def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=300, ini_save_name="",
+    def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=10000, ini_save_name="",
                  last_frame_name=""):
         """
         :param X: scikit-learn form, i.e., pf shape (n_samples, n_features)
@@ -279,9 +279,9 @@ class npcm():
             self.update_u_theta()
             self.cluster_elimination()
             self.adapt_ita()
-            # if (len(theta_ori) == len(self.theta)) and (np.linalg.norm(self.theta - theta_ori) < self.error):
-            #     self.save_last_frame(p)
-            #     break
+            if (len(theta_ori) == len(self.theta)) and (np.linalg.norm(self.theta - theta_ori) < self.error):
+                self.save_last_frame(p)
+                break
             p += 1
             yield p  # here the current iteration result has been recorded in the class, the result is ready for plotting.
             # note that the yield statement returns p as an argument to the callback function __call__(self, p) which is called by the
