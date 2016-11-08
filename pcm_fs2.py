@@ -89,16 +89,16 @@ class pcm_fs2():
         # plot the fcm initialization
         labels = np.argmax(u_orig, axis=1)
 
-        # # plot the fcm initialization result
-        # fig, ax = plt.subplots(figsize=(8, 6), dpi=300)  # assume 2-d data
-        # for label in range(self.m):
-        #     ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
-        #             color=colors[label])
-        # ax.set_xlim(self.x_lim)
-        # ax.set_ylim(self.y_lim)
-        # ax.grid(True)
-        # ax.set_title('FCM initialization:%2d clusters' % self.m)
-        # plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
+        # plot the fcm initialization result
+        fig, ax = plt.subplots(figsize=(8, 6), dpi=300)  # assume 2-d data
+        for label in range(self.m):
+            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
+                    color=colors[label])
+        ax.set_xlim(self.x_lim)
+        ax.set_ylim(self.y_lim)
+        ax.grid(True)
+        ax.set_title('FCM initialization:%2d clusters' % self.m)
+        plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
         # initialize theta, i.e., the centers
         self.theta = cntr
         # now compute ita
@@ -153,16 +153,8 @@ class pcm_fs2():
 
         labels = np.argmax(self.u, axis=1)
         for cntr_index in range(self.m):
-            # dist_2_cntr = map(np.linalg.norm, self.x[labels == cntr_index] - self.theta[cntr_index])
-            # self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(labels == cntr_index)
-            # self.ita[cntr_index] = np.dot(dist_2_cntr, self.u[labels == cntr_index][:, cntr_index]) / np.sum(
-            #     labels == cntr_index)
-            # only those without too much noise can be used to calculate ita
-            samples_mask = self.u[:, cntr_index] >= 0.1
-            if np.any(samples_mask):  # avoid null value for the following calculation
-                dist_2_cntr = map(np.linalg.norm, self.x[samples_mask] - self.theta[cntr_index])
-                # self.ita[cntr_index] = np.dot(dist_2_cntr,self.u[samples_mask][:, cntr_index]) / np.sum(samples_mask)
-                self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(samples_mask)
+            dist_2_cntr = map(np.linalg.norm, self.x[labels == cntr_index] - self.theta[cntr_index])
+            self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(labels == cntr_index)
             if np.isclose(self.ita[cntr_index], 0):
                 p += 1
                 index_delete.append(cntr_index)
