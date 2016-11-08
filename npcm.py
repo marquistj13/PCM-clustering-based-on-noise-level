@@ -63,11 +63,11 @@ class npcm():
         self.maxiter = maxiter
         self.ini_save_name = ini_save_name
         self.last_frame_name = last_frame_name
-        # use fcm to initialise the clusters
-        self.init_theta_ita()
         # prepare logging
         prepare_log()
         self.log = logging.getLogger('npcm')
+        # use fcm to initialise the clusters
+        self.init_theta_ita()
         pass
 
     def init_animation(self):
@@ -122,23 +122,27 @@ class npcm():
         # plot the fcm initialization
         labels = np.argmax(u_orig, axis=1)
 
-        # # plot the fcm initialization result
-        # fig, ax = plt.subplots(figsize=(8, 6), dpi=300)  # assume 2-d data
-        # for label in range(self.m):
-        #     ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
-        #             color=colors[label])
-        # ax.set_xlim(self.x_lim)
-        # ax.set_ylim(self.y_lim)
-        # ax.grid(True)
-        # ax.set_title('FCM initialization:%2d clusters' % self.m)
-        # plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
+        # plot the fcm initialization result
+        fig = plt.figure("fcm_init", dpi=300, figsize=(8, 6))
+        ax = fig.gca()
+        for label in range(self.m):
+            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
+                    color=colors[label])
+        ax.set_xlim(self.x_lim)
+        ax.set_ylim(self.y_lim)
+        ax.grid(True)
+        ax.set_title('FCM initialization:%2d clusters' % self.m)
+        plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
+        plt.close("fcm_init")
         # initialize theta, i.e., the centers
         self.theta = cntr
         # now compute ita
         ita = np.zeros(self.m)
+        self.log.debug("Initialize bandwidth via FCM")
         for cntr_index in range(self.m):
             dist_2_cntr = map(np.linalg.norm, self.x - cntr[cntr_index])
             ita[cntr_index] = np.dot(dist_2_cntr, u_orig[:, cntr_index]) / sum(u_orig[:, cntr_index])
+            self.log.debug("%d th cluster, ita:%3f" % (cntr_index, ita[cntr_index]))
         self.ita = ita
         pass
 
@@ -212,7 +216,7 @@ class npcm():
             # self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(labels == cntr_index)
             # self.ita[cntr_index] = np.dot(dist_2_cntr, self.u[labels == cntr_index][:, cntr_index]) / np.sum(
             #     labels == cntr_index)
-            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.01,labels == cntr_index)
+            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.01, labels == cntr_index)
             dist_2_cntr = map(np.linalg.norm, self.x[samples_mask] - self.theta[cntr_index])
             self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(samples_mask)
 
@@ -258,6 +262,7 @@ class npcm():
                                     radius=self.ita[label], color='k', fill=None, lw=2))
         plt.figure("last frame")
         plt.savefig(self.last_frame_name, dpi=300)
+        plt.close("last frame")
         pass
 
     def fit(self):
