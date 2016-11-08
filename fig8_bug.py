@@ -65,7 +65,7 @@ if __name__ == '__main__':
     ax_fig1.set_ylim(-10, 35)
     lg = ax_fig1.legend(loc='upper left', fancybox=True, framealpha=0.5, prop={'size': 8})
     ax_fig1.set_title("Original Dataset")
-    plt.savefig(r".\video\fig8_ori.png", dpi=dpi, bbox_inches='tight')
+    plt.savefig(r".\video\fig8_bug_ori.png", dpi=dpi, bbox_inches='tight')
     # plot animation and save
     fig2 = plt.figure(figsize=fig_size, dpi=dpi, num=2)
     ax = fig2.gca()
@@ -74,10 +74,10 @@ if __name__ == '__main__':
     n_cluster, sigma_v, alpha_cut = 10, 0.5, 0.1
     n_cluster, sigma_v, alpha_cut = 10, 1, 0.5
     n_cluster, sigma_v, alpha_cut = 10, 1, 0.2
-    ini_save_name = r".\video\fig8_ini_%d.png" % n_cluster
-    last_frame_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (n_cluster, sigma_v, alpha_cut)
-    tmp_video_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
-    video_save_newFps_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
+    ini_save_name = r".\video\fig8_bug_ini_%d.png" % n_cluster
+    last_frame_name = r'.\video\fig8_bug_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (n_cluster, sigma_v, alpha_cut)
+    tmp_video_name = r'.\video\fig8_bug_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
+    video_save_newFps_name = r'.\video\fig8_bug_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
     clf = npcm(X, n_cluster, sigma_v, ax=ax, x_lim=(-20, 40), y_lim=(-10, 35), alpha_cut=alpha_cut,
                ini_save_name=ini_save_name, last_frame_name=last_frame_name)
     # we should set "blit=False,repeat=False" or the program would fail. "init_func=clf.init_animation" plot the
