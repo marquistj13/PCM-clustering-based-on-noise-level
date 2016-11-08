@@ -17,7 +17,7 @@ def _generateData():
     Two close clusters, one big and the other small,
     :return:
     """
-    X = np.random.uniform(2, 8, size=(1000, 1000))
+    X = np.random.uniform(2, 8, size=(500, 300))
     y= np.zeros(len(X))
     # # Visualize the test data
     # fig0, ax0 = plt.subplots()
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     except OSError:
         if not os.path.isdir(path):
             raise
-    plt.savefig(r".\video\fig6_closer_ori.png", dpi=dpi, bbox_inches='tight')
+    plt.savefig(r".\video\fig_uniform_square_ori.png", dpi=dpi, bbox_inches='tight')
     # plot animation and save
     fig2 = plt.figure(figsize=fig_size, dpi=dpi, num=2)
     ax = fig2.gca()
@@ -62,11 +62,11 @@ if __name__ == '__main__':
     n_cluster, sigma_v, alpha_cut = 3, 3, 0.5
     n_cluster, sigma_v, alpha_cut = 10, 3, 0.9
     n_cluster, sigma_v, alpha_cut = 3, 4, 0.5
-    ini_save_name = r".\video\fig6_closer_ini_%d.png" % n_cluster
-    last_frame_name = r'.\video\fig6_closer_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (
+    ini_save_name = r".\video\fig_uniform_square_ini_%d.png" % n_cluster
+    last_frame_name = r'.\video\fig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (
         n_cluster, sigma_v, alpha_cut)
-    tmp_video_name = r'.\video\fig6_closer_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
-    video_save_newFps_name = r'.\video\fig6_closer_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
+    tmp_video_name = r'.\video\fig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
+    video_save_newFps_name = r'.\videofig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
     clf = npcm(X, n_cluster, sigma_v, ax=ax, x_lim=(-1, 10), y_lim=(-1, 10), alpha_cut=alpha_cut,
                ini_save_name=ini_save_name, last_frame_name=last_frame_name)
     # we should set "blit=False,repeat=False" or the program would fail. "init_func=clf.init_animation" plot the
