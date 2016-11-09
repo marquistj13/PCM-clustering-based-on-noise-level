@@ -3,6 +3,7 @@ import numpy as np
 import skfuzzy as fuzz
 import matplotlib.pyplot as plt
 import logging
+from sklearn.neighbors import KernelDensity
 
 colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
 plt.style.use('classic')
@@ -33,6 +34,29 @@ def prepare_log():
     logger.addHandler(ch)
     pass
 
+
+def cauculate_density(data, labels, centers):
+    neighbour_size = 50
+    m = len(np.unique(labels))
+    result = []
+    for cntr_index in range(m):
+        data_index = data[labels == cntr_index]
+        dist_2_cntr = map(np.linalg.norm, data_index - centers[cntr_index])
+        cntr_sort_index = np.argsort(dist_2_cntr)[:neighbour_size]
+        pnt_nearest = data_index[cntr_sort_index[20]]  # get the 10th nearest point to center
+        dist_2_pnt = map(np.linalg.norm, data_index - pnt_nearest)
+        pnt_sort_index = np.argsort(dist_2_pnt)[:neighbour_size]
+        number_of_close = np.sum([np.any([pnt_sort_index == index]) for index in cntr_sort_index])
+        result.append(number_of_close)
+    return result
+
+def cauculate_log_likelihood (data, labels, bandwidths):
+    m = len(np.unique(labels))
+    result = []
+    for cntr_index in range(m):
+        clf=KernelDensity(bandwidths[cntr_index]).fit(data[cntr_index])
+        result.append(clf.score_samples(data[cntr_index]))
+    return result
 
 class npcm():
     def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=10000, ini_save_name="",
@@ -126,12 +150,13 @@ class npcm():
         for label in range(self.m):
             ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
                     color=colors[label])
+            ax.text(cntr[label][0], cntr[label][1], "%d" % label, size='xx-large')
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
         ax.grid(True)
         ax.set_title('FCM initialization:%2d clusters' % self.m)
         plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
-        plt.close("fcm_init")
+        # plt.close("fcm_init")
         # initialize theta, i.e., the centers
         self.theta = cntr
         # now compute ita
@@ -140,8 +165,13 @@ class npcm():
         for cntr_index in range(self.m):
             dist_2_cntr = map(np.linalg.norm, self.x - cntr[cntr_index])
             ita[cntr_index] = np.dot(dist_2_cntr, u_orig[:, cntr_index]) / sum(u_orig[:, cntr_index])
-            self.log.debug("%d th cluster, ita:%3f" % (cntr_index, ita[cntr_index]))
+            self.log.debug(
+                "%d th cluster, ita:%.3f, density:%.3f",
+                cntr_index, ita[cntr_index], np.sum(labels == cntr_index) / ita[cntr_index])
         self.ita = ita
+        density_results = cauculate_log_likelihood(self.x,labels,ita)
+        for cntr_index in range(self.m):
+            self.log.debug("%d th cluster, density:%d", cntr_index, density_results[cntr_index])
         pass
 
     def update_u_theta(self):
