@@ -49,7 +49,7 @@ def _generateFig8():
 if __name__ == '__main__':
     # X, y = _generateFig8()
     # np.savez(r"./video/fig8_data", X=X, y=y)
-    tmp_file = np.load(r"./video/fig8_data.npz")
+    tmp_file = np.load(r"./video/fig8_bug_data.npz")
     X, y = tmp_file['X'], tmp_file['y']
     marker_size = 4
     dpi = 90
