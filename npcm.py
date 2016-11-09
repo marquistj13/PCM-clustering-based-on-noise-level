@@ -3,7 +3,6 @@ import numpy as np
 import skfuzzy as fuzz
 import matplotlib.pyplot as plt
 import logging
-from sklearn.neighbors import KernelDensity
 
 colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
 plt.style.use('classic')
@@ -34,29 +33,6 @@ def prepare_log():
     logger.addHandler(ch)
     pass
 
-
-def cauculate_density(data, labels, centers):
-    neighbour_size = 50
-    m = len(np.unique(labels))
-    result = []
-    for cntr_index in range(m):
-        data_index = data[labels == cntr_index]
-        dist_2_cntr = map(np.linalg.norm, data_index - centers[cntr_index])
-        cntr_sort_index = np.argsort(dist_2_cntr)[:neighbour_size]
-        pnt_nearest = data_index[cntr_sort_index[20]]  # get the 10th nearest point to center
-        dist_2_pnt = map(np.linalg.norm, data_index - pnt_nearest)
-        pnt_sort_index = np.argsort(dist_2_pnt)[:neighbour_size]
-        number_of_close = np.sum([np.any([pnt_sort_index == index]) for index in cntr_sort_index])
-        result.append(number_of_close)
-    return result
-
-def cauculate_log_likelihood (data, labels, bandwidths, cntrs):
-    m = len(np.unique(labels))
-    result = []
-    for cntr_index in range(m):
-        clf=KernelDensity(bandwidths[cntr_index]).fit(data[cntr_index])
-        result.append(clf.score(cntrs[cntr_index]))
-    return result
 
 class npcm():
     def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=10000, ini_save_name="",
@@ -169,9 +145,12 @@ class npcm():
                 "%d th cluster, ita:%.3f, density:%.3f",
                 cntr_index, ita[cntr_index], np.sum(labels == cntr_index) / ita[cntr_index])
         self.ita = ita
-        density_results = cauculate_log_likelihood(self.x,labels,ita,cntr)
+        # eliminate noise clusters
+        no_of_pnts = []
         for cntr_index in range(self.m):
-            self.log.debug("%d th cluster, density:%.3f", cntr_index, density_results[cntr_index])
+            dist_2_cntr = map(np.linalg.norm, self.x - cntr[cntr_index])
+            no_of_pnts.append(np.sum(dist_2_cntr <= ita[cntr_index]))
+            self.log.debug("%d th cluster, density:%.3f", cntr_index, no_of_pnts[cntr_index] / ita[cntr_index] ** 2)
         pass
 
     def update_u_theta(self):
