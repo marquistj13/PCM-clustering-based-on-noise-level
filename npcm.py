@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from sklearn.cluster import KMeans
+import skfuzzy as fuzz
 import matplotlib.pyplot as plt
 import logging
 
@@ -112,22 +112,16 @@ class npcm():
 
         :return:
         """
-        clf = KMeans(self.m_ori, random_state=45).fit(self.x)
-        # hard classification labels
-        labels = clf.labels_
-        # initialize theta, i.e., the centers
-        self.theta = clf.cluster_centers_
-        # now compute ita
-        ita = np.zeros(self.m)
-        self.log.debug("Initialize bandwidth via KMeans")
-        for cntr_index in range(self.m_ori):
-            dist_2_cntr = map(np.linalg.norm, self.x[labels == cntr_index] - self.theta[cntr_index])
-            ita[cntr_index] = np.average(dist_2_cntr)
-            self.log.debug("%d th cluster, ita:%3f" % (cntr_index, ita[cntr_index]))
-        self.ita = ita
+        x_tmp = self.x.T  # becasue skfuzzy is converted from matlab, the data should be of (n_features, n_samples)
+        cntr, u_orig, _, _, _, _, _ = fuzz.cluster.cmeans(x_tmp, self.m, 2, error=0.005, maxiter=1000, seed=45)
+        # cntr, u_orig represent center,fuzzy c-partitioned matrix (membership matrix)
+        u_orig = u_orig.T  # convert back to scikit-learn form (n_samples, n_features)
+        # I'm confused that the returned cntr is already (n_samples, n_features) and doesn't need the transpose
+        # plot the fcm initialization
+        labels = np.argmax(u_orig, axis=1)
 
         # plot the fcm initialization result
-        fig = plt.figure("KMeans_init", dpi=300, figsize=(8, 6))
+        fig = plt.figure("fcm_init", dpi=300, figsize=(8, 6))
         ax = fig.gca()
         for label in range(self.m):
             ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
@@ -135,10 +129,19 @@ class npcm():
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
         ax.grid(True)
-        ax.set_title('KMeans initialization:%2d clusters' % self.m)
+        ax.set_title('FCM initialization:%2d clusters' % self.m)
         plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
-        plt.close("KMeans_init")
-
+        plt.close("fcm_init")
+        # initialize theta, i.e., the centers
+        self.theta = cntr
+        # now compute ita
+        ita = np.zeros(self.m)
+        self.log.debug("Initialize bandwidth via FCM")
+        for cntr_index in range(self.m):
+            dist_2_cntr = map(np.linalg.norm, self.x - cntr[cntr_index])
+            ita[cntr_index] = np.dot(dist_2_cntr, u_orig[:, cntr_index]) / sum(u_orig[:, cntr_index])
+            self.log.debug("%d th cluster, ita:%3f" % (cntr_index, ita[cntr_index]))
+        self.ita = ita
         pass
 
     def update_u_theta(self):
