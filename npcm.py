@@ -148,7 +148,7 @@ class npcm():
         density_clusters = []  # store density each cluster
         for cntr_index in range(self.m):
             no_of_pnts = np.sum(labels == cntr_index)
-            density = no_of_pnts / ita[cntr_index] ** 2
+            density = no_of_pnts / np.power(ita[cntr_index], np.shape(self.x)[1])
             self.log.debug("%d th cluster, density:%.3f", cntr_index, density)
             density_clusters.append(density)
         index_delete = []  # store the cluster index to be deleted
@@ -234,9 +234,12 @@ class npcm():
             # self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(labels == cntr_index)
             # self.ita[cntr_index] = np.dot(dist_2_cntr, self.u[labels == cntr_index][:, cntr_index]) / np.sum(
             #     labels == cntr_index)
-            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.01, labels == cntr_index)
-            dist_2_cntr = map(np.linalg.norm, self.x[samples_mask] - self.theta[cntr_index])
-            self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(samples_mask)
+            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.5 * self.alpha_cut, labels == cntr_index)
+            if np.any(samples_mask):
+                dist_2_cntr = map(np.linalg.norm, self.x[samples_mask] - self.theta[cntr_index])
+                self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(samples_mask)
+            else:
+                self.ita[cntr_index] = 0
 
             # # only those without too much noise can be used to calculate ita
             # samples_mask = self.u[:, cntr_index] >= 0.1
