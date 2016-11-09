@@ -50,12 +50,12 @@ def cauculate_density(data, labels, centers):
         result.append(number_of_close)
     return result
 
-def cauculate_log_likelihood (data, labels, bandwidths):
+def cauculate_log_likelihood (data, labels, bandwidths, cntrs):
     m = len(np.unique(labels))
     result = []
     for cntr_index in range(m):
         clf=KernelDensity(bandwidths[cntr_index]).fit(data[cntr_index])
-        result.append(clf.score_samples(data[cntr_index]))
+        result.append(clf.score(cntrs[cntr_index]))
     return result
 
 class npcm():
@@ -169,9 +169,9 @@ class npcm():
                 "%d th cluster, ita:%.3f, density:%.3f",
                 cntr_index, ita[cntr_index], np.sum(labels == cntr_index) / ita[cntr_index])
         self.ita = ita
-        density_results = cauculate_log_likelihood(self.x,labels,ita)
+        density_results = cauculate_log_likelihood(self.x,labels,ita,cntr)
         for cntr_index in range(self.m):
-            self.log.debug("%d th cluster, density:%d", cntr_index, density_results[cntr_index])
+            self.log.debug("%d th cluster, density:%.3f", cntr_index, density_results[cntr_index])
         pass
 
     def update_u_theta(self):
