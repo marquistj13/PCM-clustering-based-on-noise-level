@@ -191,12 +191,10 @@ class npcm():
                            (cntr_index, self.ita[cntr_index], tmp_sig_vj, tmp_ita_alpha, tmp_ita_ori))
             u[:, cntr_index] = v_exp_marginal(dist_2_cntr, self.ita[cntr_index], tmp_sig_vj)
         self.u = u
-
         # update theta (centers)
-        labels = np.argmax(self.u, axis=1)
         for cntr_index in range(self.m):
             # only those without too much noise can be used to calculate centers
-            samples_mask = np.logical_and(self.u[:, cntr_index] >= self.alpha_cut, labels == cntr_index)
+            samples_mask = u[:, cntr_index] >= self.alpha_cut
             if np.any(samples_mask):  # avoid null value for the following calculation
                 self.theta[cntr_index] = np.sum(u[samples_mask][:, cntr_index][:, np.newaxis]
                                                 * self.x[samples_mask], axis=0) / sum(u[samples_mask][:, cntr_index])
