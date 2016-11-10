@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from pcm_fs2 import pcm_fs2
+from algorithms import apcm
 from sklearn.datasets import make_blobs
 
 colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen']
@@ -23,8 +23,8 @@ def _generateFig8():
     x1, y1 = make_blobs(n_samples=1000, n_features=2, centers=[[20, 20]], cluster_std=np.sqrt(20),
                         random_state=45)
     x2, y2 = make_blobs(n_samples=200, n_features=2, centers=[[30, 10]], cluster_std=np.sqrt(1), random_state=45)
-    noise_x = np.random.uniform(-18, 18, size=200)
-    noise_y = np.random.uniform(-8, 35, size=200)
+    noise_x = np.random.uniform(-18, 18, size=800)
+    noise_y = np.random.uniform(-8, 75, size=800)
     noise = np.r_['1,2,0', noise_x, noise_y]
     print noise.shape
     y1 += 1
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], '.',
                      color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
     ax_fig1.set_xlim(-20, 40)
-    ax_fig1.set_ylim(-10, 35)
+    ax_fig1.set_ylim(-10, 80)
     lg = ax_fig1.legend(loc='upper left', fancybox=True, framealpha=0.5, prop={'size': 8})
     ax_fig1.set_title("Original Dataset")
     plt.savefig(r".\video\fig8_ori.png", dpi=dpi, bbox_inches='tight')
@@ -70,13 +70,12 @@ if __name__ == '__main__':
     n_cluster, sigma_v, alpha_cut = 10, 1, 0.1
     n_cluster, sigma_v, alpha_cut = 10, 0.5, 0.1
     n_cluster, sigma_v, alpha_cut = 10, 1, 0.5
-    n_cluster, sigma_v, alpha_cut = 10, 1, 0.4
+    n_cluster, sigma_v, alpha_cut = 10, 1, 0.2
     ini_save_name = r".\video\fig8_ini_%d.png" % n_cluster
     last_frame_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (n_cluster, sigma_v, alpha_cut)
     tmp_video_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
     video_save_newFps_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
-    clf = pcm_fs2(X, n_cluster, sigma_v, ax=ax, x_lim=(-20, 40), y_lim=(-10, 35), alpha_cut=alpha_cut,
-                  ini_save_name=ini_save_name, last_frame_name=last_frame_name)
+    clf = apcm(X, n_cluster, 0.01, ax=ax, x_lim=(-20, 40), y_lim=(-10, 80))
     # we should set "blit=False,repeat=False" or the program would fail. "init_func=clf.init_animation" plot the
     # background of each frame There is not much point to use blit=True, if most parts of your plot should be
     # refreshed. see http://stackoverflow.com/questions/14844223/python-matplotlib-blit-to-axes-or-sides-of-the
@@ -85,7 +84,7 @@ if __name__ == '__main__':
     #  just a way to avoid re-drawing everything if only some things are changing. If everything is changing,
     # there's no point in using blitting. Just re-draw the plot.
     anim = animation.FuncAnimation(fig2, clf, frames=clf.fit,
-                                   init_func=clf.init_animation, interval=1500, blit=True, repeat=False)
+                                   init_func=clf.init_animation, interval=1500, blit=False, repeat=False)
     # anim.save(tmp_video_name, fps=1, extra_args=['-vcodec', 'libx264'], dpi='figure')
     # new_fps = 24
     # play_slow_rate = 1.5  # controls how many times a frame repeats.

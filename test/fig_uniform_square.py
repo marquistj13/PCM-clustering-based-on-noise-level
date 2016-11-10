@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from npcm import npcm
+from algorithms import npcm
 from sklearn.datasets import make_blobs
 from moviepy.video.io.ffmpeg_reader import FFMPEG_VideoReader
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
@@ -12,19 +12,13 @@ colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen']
 plt.style.use('classic')
 
 
-def _generateFig6():
+def _generateData():
     """
     Two close clusters, one big and the other small,
     :return:
     """
-
-    x0, y0 = make_blobs(n_samples=400, n_features=2, centers=[[1, 0]], cluster_std=0.2, random_state=45)
-    x1, y1 = make_blobs(n_samples=400, n_features=2, centers=[[2.25, 1.5]], cluster_std=0.2, random_state=45)
-    x2, y2 = make_blobs(n_samples=400, n_features=2, centers=[[1.75, 2]], cluster_std=0.2, random_state=45)
-    y1 += 1
-    y2 += 2
-    X = np.vstack((x0, x1, x2))
-    y = np.hstack((y0, y1, y2))
+    X = np.random.uniform(2, 8, size=(500, 300))
+    y= np.zeros(len(X))
     # # Visualize the test data
     # fig0, ax0 = plt.subplots()
     # for label in range(3):
@@ -37,7 +31,7 @@ def _generateFig6():
 
 
 if __name__ == '__main__':
-    X, y = _generateFig6()
+    X, y = _generateData()
     marker_size = 4
     dpi = 90
     fig_size = (8, 6)
@@ -45,21 +39,21 @@ if __name__ == '__main__':
     fig1 = plt.figure(figsize=fig_size, dpi=dpi, num=1)
     ax_fig1 = fig1.gca()
     ax_fig1.grid(True)
-    for label in range(3):
+    for label in range(1):
         ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], '.',
                      color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
-    ax_fig1.set_xlim(0.1, 3)
-    ax_fig1.set_ylim(-0.75, 2.75)
+    ax_fig1.set_xlim(-1, 10)
+    ax_fig1.set_ylim(-1, 10)
     lg = ax_fig1.legend(loc='upper left', fancybox=True, framealpha=0.5, prop={'size': 8})
     ax_fig1.set_title("Original Dataset")
     # create directory to save
-    path=r".\video"
+    path = r".\video"
     try:
         os.makedirs(path)
     except OSError:
         if not os.path.isdir(path):
             raise
-    plt.savefig(r".\video\fig6_ori.png", dpi=dpi, bbox_inches='tight')
+    plt.savefig(r".\video\fig_uniform_square_ori.png", dpi=dpi, bbox_inches='tight')
     # plot animation and save
     fig2 = plt.figure(figsize=fig_size, dpi=dpi, num=2)
     ax = fig2.gca()
@@ -67,13 +61,14 @@ if __name__ == '__main__':
     n_cluster, sigma_v, alpha_cut = 3, 3, 0.9
     n_cluster, sigma_v, alpha_cut = 3, 3, 0.5
     n_cluster, sigma_v, alpha_cut = 10, 3, 0.9
-    n_cluster, sigma_v, alpha_cut = 10, 4, 0.65
-    ini_save_name = r".\video\fig6_ini_%d.png" % n_cluster
-    last_frame_name = r'.\video\fig6_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (n_cluster, sigma_v, alpha_cut)
-    tmp_video_name = r'.\video\fig6_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
-    video_save_newFps_name = r'.\video\fig6_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
-    clf = npcm(X, n_cluster, sigma_v, ax=ax, x_lim=(0.1, 3), y_lim=(-0.75, 2.75), alpha_cut=alpha_cut,
-                  ini_save_name=ini_save_name, last_frame_name=last_frame_name)
+    n_cluster, sigma_v, alpha_cut = 3, 4, 0.5
+    ini_save_name = r".\video\fig_uniform_square_ini_%d.png" % n_cluster
+    last_frame_name = r'.\video\fig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (
+        n_cluster, sigma_v, alpha_cut)
+    tmp_video_name = r'.\video\fig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
+    video_save_newFps_name = r'.\videofig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
+    clf = npcm(X, n_cluster, sigma_v, ax=ax, x_lim=(-1, 10), y_lim=(-1, 10), alpha_cut=alpha_cut,
+               ini_save_name=ini_save_name, last_frame_name=last_frame_name)
     # we should set "blit=False,repeat=False" or the program would fail. "init_func=clf.init_animation" plot the
     # background of each frame There is not much point to use blit=True, if most parts of your plot should be
     # refreshed. see http://stackoverflow.com/questions/14844223/python-matplotlib-blit-to-axes-or-sides-of-the
@@ -82,7 +77,7 @@ if __name__ == '__main__':
     #  just a way to avoid re-drawing everything if only some things are changing. If everything is changing,
     # there's no point in using blitting. Just re-draw the plot.
     anim = animation.FuncAnimation(fig2, clf, frames=clf.fit,
-                                   init_func=clf.init_animation, interval=2000, blit=True, repeat=False)
+                                   init_func=clf.init_animation, interval=800, blit=True, repeat=False)
     # anim.save(tmp_video_name, fps=1, extra_args=['-vcodec', 'libx264'], dpi='figure')
     # new_fps = 24
     # play_slow_rate = 1.5  # controls how many times a frame repeats.

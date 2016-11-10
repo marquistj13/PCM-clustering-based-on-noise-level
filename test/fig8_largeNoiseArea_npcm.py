@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from npcm import npcm
+from algorithms import npcm
 from sklearn.datasets import make_blobs
 
 colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen']
@@ -23,8 +23,8 @@ def _generateFig8():
     x1, y1 = make_blobs(n_samples=1000, n_features=2, centers=[[20, 20]], cluster_std=np.sqrt(20),
                         random_state=45)
     x2, y2 = make_blobs(n_samples=200, n_features=2, centers=[[30, 10]], cluster_std=np.sqrt(1), random_state=45)
-    noise_x = np.random.uniform(-18, 18, size=200)
-    noise_y = np.random.uniform(-8, 35, size=200)
+    noise_x = np.random.uniform(-18, 18, size=800)
+    noise_y = np.random.uniform(-8, 75, size=800)
     noise = np.r_['1,2,0', noise_x, noise_y]
     print noise.shape
     y1 += 1
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], '.',
                      color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
     ax_fig1.set_xlim(-20, 40)
-    ax_fig1.set_ylim(-10, 35)
+    ax_fig1.set_ylim(-10, 80)
     lg = ax_fig1.legend(loc='upper left', fancybox=True, framealpha=0.5, prop={'size': 8})
     ax_fig1.set_title("Original Dataset")
     plt.savefig(r".\video\fig8_ori.png", dpi=dpi, bbox_inches='tight')
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     last_frame_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (n_cluster, sigma_v, alpha_cut)
     tmp_video_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
     video_save_newFps_name = r'.\video\fig8_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
-    clf = npcm(X, n_cluster, sigma_v, ax=ax, x_lim=(-20, 40), y_lim=(-10, 35), alpha_cut=alpha_cut,
+    clf = npcm(X, n_cluster, sigma_v, ax=ax, x_lim=(-20, 40), y_lim=(-10, 80), alpha_cut=alpha_cut,
                   ini_save_name=ini_save_name, last_frame_name=last_frame_name)
     # we should set "blit=False,repeat=False" or the program would fail. "init_func=clf.init_animation" plot the
     # background of each frame There is not much point to use blit=True, if most parts of your plot should be
