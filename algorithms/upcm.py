@@ -16,7 +16,7 @@ def exp_marginal(d, v0, sigma_v0):
 v_exp_marginal = np.vectorize(exp_marginal)
 
 
-class pcm_fs2():
+class upcm():
     def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=0.005, maxiter=10000, ini_save_name="",
                  last_frame_name=""):
         """
