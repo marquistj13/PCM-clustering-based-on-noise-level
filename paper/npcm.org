@@ -1,0 +1,111 @@
+#+STARTUP: content
+#+OPTIONS: 
+#+OPTIONS: toc:nil
+# set DATE to void to avoid it's display
+#+DATE: 
+#+LATEX_CLASS: IEEEtran
+#+LaTeX_CLASS_OPTIONS: [journal]
+#+LATEX_HEADER: \usepackage[thmmarks, amsmath, thref]{ntheorem}
+#+LATEX_HEADER: \theoremstyle{definition}
+# Adds automatic line break, if heading is too long
+#+LATEX_HEADER: \makeatletter \renewtheoremstyle{plain} {\item{\theorem@headerfont ##1\ ##2\theorem@separator}~}  {\item{\theorem@headerfont ##1\ ##2\ (##3)\theorem@separator}~}
+#+LATEX_HEADER: \theoremheaderfont{\normalfont\bfseries}
+#+LATEX_HEADER: \theoremseparator{:}
+#+LATEX_HEADER: \theorembodyfont{\normalfont}
+#+LATEX_HEADER: \theoremsymbol{\ensuremath{\blacksquare}}
+#+LATEX_HEADER: \newtheorem{definition}{Definition}
+
+#+LATEX_HEADER: \usepackage[caption=false,font=footnotesize]{subfig}
+#+LATEX_HEADER: \usepackage{algorithm}
+#+LATEX_HEADER: \usepackage{algpseudocode}
+#+LATEX_HEADER: \renewcommand{\algorithmicrequire}{\textbf{Input:}}
+#+LATEX_HEADER: \newcommand{\crhd}{\raisebox{.25ex}{$\rhd$}}
+#+LATEX_HEADER: \renewcommand{\algorithmiccomment}[1]{{\hspace{-0.6cm}$\crhd$ {\it {#1}}}}
+
+
+# bold and italic vector
+#+LATEX_HEADER: \newcommand{\vect}[1]{\boldsymbol{#1}}
+# In IEEEtran_HOWTO the equations section on page 8. this 2500 config is to estore IEEEtran ability to automatically break within multiline equations
+#+LATEX_HEADER: \interdisplaylinepenalty=2500
+
+
+#+BEGIN_LaTeX
+\bibliographystyle{IEEEtran}
+\bibliography{D:/emacs/etc/ZoteroOutput,IEEEabrv}
+#+END_LaTeX
+
+#+TITLE: PCM Clustering based on Noise Level
+#+BEGIN_LaTeX
+\begin{abstract}
+Possibilistic c-Means (PCM) based clustering algorithms  are widely used in the literature. The unified framework (UPCM) of  PCM and adaptive PCM (APCM) controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
+In this paper, we present an extension of UPCM, i.e., noise level based pcm (NPCM), to ease the parameter-choosing issue and also to  improve UPCM.
+NPCM runs with two parameters, $m_{ini}$ is the potentially over-specified initial number of clusters, $\alpha$ is the noise level of the dataset which characterizes minimum closeness of clusters. NPCM then discovers the true number of clusters. $\alpha$ controls the closeness of generated clusters. Another property of NPCM is that the bandwidth (radius) of each cluster can be correctly estimated, furthermore, NPCM automatically calculates the uncertainty of the estimated bandwidth ($\sigma_v$). More specifically, a large bandwidth corresponds to a large bandwidth uncertainty $\sigma_v$. 
+\end{abstract}
+#+END_LaTeX 
+** Introduction
+** Background Knowledge and Motivations
+*** The PCM and APCM Clustering Algorithms
+The objective of Possibilistic c-means (PCM) \cite{krishnapuram_possibilistic_1993} is to minimize the following cost:
+#+BEGIN_LaTeX
+\begin{equation}
+J(\mathbf{\Theta},\mathbf{U})=\sum_{j=1}^{c}J_j=\sum_{j=1}^{c}\left[\sum_{i=1}^{N}u_{ij}d_{ij}^2+\gamma_j \sum_{i=1}^{N}f(u_{ij})\right]
+\end{equation}
+#+END_LaTeX
+where $f(\cdot)$ can be chosen as:
+#+BEGIN_LaTeX
+\begin{equation}
+f(u_{ij})=u_{ij}\log u_{ij}-u_{ij}
+\end{equation}
+#+END_LaTeX 
+$\mathbf{\Theta}=(\boldsymbol{\theta}_1,\ldots,\boldsymbol{\theta}_c)$ is a $c$-tuple of prototypes, $d_{ij}$ is the distance of feature point $\mathbf{x}_i$ to prototype $\boldsymbol{\theta}_j$, $N$ is the total number of feature vectors, $c$ is the number of clusters, and $\mathbf{U}=[u_{ij}]$ is a $N\times c$ matrix where $u_{ij}$ denotes the /degree of compatibility/ of $\mathbf{x}_i$ to the $j\text{th}$ cluster $C_j$ which is represented by $\boldsymbol{\theta}_j$. $\gamma_j$ can be seen as a bandwidth parameter of the possibility (membership) distribution for each cluster and is usually fixed in PCM based algorithms. Note that either $\gamma_j$ or $\sqrt{\gamma_j}$ can be referred to as the bandwidth for convenience in this paper.
+
+Compared with Fuzzy c-means (FCM) \cite{bezdek_pattern_2013}, PCM relaxes the constraint that the memberships of a datum to all clusters sum to $1$. So the generated memberships can be indicated as the typicality of a point to the cluster. This modification also leads to higher noise immunity with respect to FCM based algorithms \cite{barni_comments_1996}.
+
+Minimizing $J(\mathbf{\Theta},\mathbf{U})$ with respect to $u_{ij}$ and $\boldsymbol{\theta}_j$ leads to the the following two update equations:
+#+BEGIN_LaTeX
+\begin{IEEEeqnarray}{ll}
+u_{ij}&=\exp\left(-\frac{d^2_{ij}}{\gamma_j}\right) \label{pcm_u_update}  \\
+\boldsymbol{\theta}_j&=\frac{\Sigma_{i=1}^Nu_{ij}\mathbf{x}_i}{\Sigma_{i=1}^Nu_{ij}} \label{pcm_theta_update}
+\end{IEEEeqnarray}
+#+END_LaTeX
+
+The major problem of PCM is that its performance relies heavily on good initial partitions and parameters \cite{nasraoui_improved_1996}. More specifically, the $c$ dense regions found may be coincident, as reported in \cite{barni_comments_1996}. Adaptive PCM (APCM) \cite{xenaki_novel_2016} solves this problem by adapting $\gamma_j$ at each iteration, and the clusters with $\gamma_j=0$ are eliminated. To handle the case where two physical clusters with very different variance are located very close to each other, APCM introduces a parameter $\alpha$ to manually scale the bandwidth:
+#+BEGIN_LaTeX
+\begin{equation}
+\label{corrected_eta}
+\gamma_j=\frac{\hat{\eta}}{\alpha}\eta_j
+\end{equation}
+#+END_LaTeX 
+where $\hat{\eta}$ is a constant defined as the minimum among all initial $\eta_j\text{s}$, $\hat{\eta}=\min_j\eta_j$, and $\alpha$ is chosen so that the quantity $\hat{\eta}/\alpha$ equals to the mean absolute deviation ($\eta_j$)  of the smallest physical cluster formed in the dataset. $\eta_j$ is initialized as
+#+BEGIN_LaTeX
+\begin{equation}
+\label{apcm_eta_init}
+\eta_j=\frac{\Sigma_{i=1}^Nu_{ij}^{FCM}d_{ij}}{\Sigma_{i=1}^Nu_{ij}^{FCM}}  
+\end{equation}
+#+END_LaTeX 
+where $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$, $\boldsymbol{\theta}_j\text{s}$ and $u_{ij}^{FCM}\text{s}$ in \eqref{apcm_eta_init} are the final parameter estimates obtained by FCM. $\eta_j$ is updated at each iteration as the /mean absolute deviation/ of the most compatible to cluster $C_j$ data points which form a set $A_j$, i.e., $A_j=\{\mathbf{x}_i|u_{ij}=\max_r u_{ir}\}$.
+#+BEGIN_LaTeX
+\begin{equation}
+\label{apcm_eta_update}
+\eta_j=\frac{1}{n_j}\sum_{\mathbf{x}_i\in A_j}||\mathbf{x}_i-\boldsymbol{\mu}_j||
+\end{equation}
+#+END_LaTeX 
+where $n_j$ and $\boldsymbol{\mu}_j$ are the number of points in $A_j$ and the mean vector of points in $A_j$ respectively.
+*** Conditional Fuzzy Set
+*** The UPCM Algorithm
+The unified framework (UPCM) of PCM and APCM controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
+** Our Algorithm
+*** Motivations
+*** Initialization
+It's shown in \cite{panda_comparing_2012} that kmeans is faster than FCM.
+over-specified number of clusters
+*** Mdelling the relation between $\alpha$ and $\sigma_v$
+*** when the clustering process terminate
+*** handling noisy clusters
+*** summarize the algorithm in Algorithm template
+
+
+
+
+
+
