@@ -4,6 +4,8 @@ import skfuzzy as fuzz
 import matplotlib.pyplot as plt
 import logging
 
+logging.captureWarnings(True)
+
 colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
 plt.style.use('classic')
 
@@ -14,24 +16,6 @@ def exp_marginal(d, v0, sigma_v0):
 
 
 v_exp_marginal = np.vectorize(exp_marginal)
-
-
-def prepare_log():
-    """
-    for logging
-    :return:
-    """
-    logger = logging.getLogger('npcm')
-    logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler('logging.log', 'w')
-    fh.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    logger.addHandler(fh)
-    logger.addHandler(ch)
-    pass
 
 
 class npcm():
@@ -61,9 +45,7 @@ class npcm():
         self.maxiter = maxiter
         self.ini_save_name = ini_save_name
         self.last_frame_name = last_frame_name
-        # prepare logging
-        prepare_log()
-        self.log = logging.getLogger('npcm')
+        self.log = logging.getLogger('algorithm.npcm')
         # use fcm to initialise the clusters
         self.init_theta_ita()
         pass
