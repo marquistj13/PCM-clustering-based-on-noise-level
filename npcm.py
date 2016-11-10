@@ -121,7 +121,7 @@ class npcm():
         labels = np.argmax(u_orig, axis=1)
 
         # plot the fcm initialization result
-        fig = plt.figure("fcm_init", dpi=300, figsize=(8, 6))
+        fig = plt.figure("fcm_init", dpi=90, figsize=(8, 6))
         ax = fig.gca()
         for label in range(self.m):
             ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
@@ -138,26 +138,26 @@ class npcm():
         # now compute ita
         ita = np.zeros(self.m)
         self.log.debug("Initialize bandwidth via FCM")
-        for cntr_index in range(self.m):
-            dist_2_cntr = map(np.linalg.norm, self.x - cntr[cntr_index])
-            ita[cntr_index] = np.dot(dist_2_cntr, u_orig[:, cntr_index]) / sum(u_orig[:, cntr_index])
-            self.log.debug("%d th cluster, ita:%.3f", cntr_index, ita[cntr_index])
+        for index in range(self.m):
+            dist_2_cntr = map(np.linalg.norm, self.x - cntr[index])
+            ita[index] = np.dot(dist_2_cntr, u_orig[:, index]) / sum(u_orig[:, index])
         self.ita = ita
 
         # eliminate noise clusters
-        density_clusters = []  # store density each cluster
-        for cntr_index in range(self.m):
-            no_of_pnts = np.sum(labels == cntr_index)
-            density = no_of_pnts / np.power(ita[cntr_index], np.shape(self.x)[1])
-            self.log.debug("%d th cluster, density:%.3f", cntr_index, density)
-            density_clusters.append(density)
+        density_list = []  # store density each cluster
+        for index in range(self.m):
+            no_of_pnts = np.sum(labels == index)
+            density = no_of_pnts / np.power(ita[index], np.shape(self.x)[1])
+            density_list.append(density)
         index_delete = []  # store the cluster index to be deleted
         p = 0
-        max_density = max(density_clusters)  # the maximum density
-        for cntr_index in range(self.m):
-            if density_clusters[cntr_index] < 0.1 * max_density:
-                index_delete.append(cntr_index)
+        max_density = max(density_list)  # the maximum density
+        for index in range(self.m):
+            if density_list[index] < 0.1 * max_density:
+                index_delete.append(index)
                 p += 1
+        for index in range(self.m):
+            self.log.debug("%d th cluster, ita:%.3f, density:%.3f", index, ita[index], density_list[index])
         self.log.debug("Noise cluster delete list:%s", index_delete)
         self.theta = np.delete(self.theta, index_delete, axis=0)
         self.ita = np.delete(self.ita, index_delete, axis=0)
@@ -234,7 +234,7 @@ class npcm():
             # self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(labels == cntr_index)
             # self.ita[cntr_index] = np.dot(dist_2_cntr, self.u[labels == cntr_index][:, cntr_index]) / np.sum(
             #     labels == cntr_index)
-            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.5 * self.alpha_cut, labels == cntr_index)
+            samples_mask = np.logical_and(self.u[:, cntr_index] >= 0.01, labels == cntr_index)
             if np.any(samples_mask):
                 dist_2_cntr = map(np.linalg.norm, self.x[samples_mask] - self.theta[cntr_index])
                 self.ita[cntr_index] = sum(dist_2_cntr) / np.sum(samples_mask)
