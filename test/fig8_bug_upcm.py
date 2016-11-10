@@ -2,8 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-# from npcm import npcm
-from pcm_fs2 import pcm_fs2
+from algorithms import upcm
 from sklearn.datasets import make_blobs
 
 colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen']
@@ -79,7 +78,7 @@ if __name__ == '__main__':
     last_frame_name = r'.\video\fig8_bug_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (n_cluster, sigma_v, alpha_cut)
     tmp_video_name = r'.\video\fig8_bug_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
     video_save_newFps_name = r'.\video\fig8_bug_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
-    clf = pcm_fs2(X, n_cluster, sigma_v, ax=ax, x_lim=(-20, 40), y_lim=(-10, 35), alpha_cut=alpha_cut,
+    clf = upcm(X, n_cluster, sigma_v, ax=ax, x_lim=(-20, 40), y_lim=(-10, 35), alpha_cut=alpha_cut,
                ini_save_name=ini_save_name, last_frame_name=last_frame_name)
     # we should set "blit=False,repeat=False" or the program would fail. "init_func=clf.init_animation" plot the
     # background of each frame There is not much point to use blit=True, if most parts of your plot should be
