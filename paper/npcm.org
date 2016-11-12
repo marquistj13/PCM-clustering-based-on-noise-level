@@ -98,12 +98,59 @@ where $n_j$ and $\boldsymbol{\mu}_j$ are the number of points in $A_j$ and the m
 The unified framework (UPCM) of PCM and APCM controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
 ** Our Algorithm
 *** Motivations
+1. The clustering algorithm should have as less parameters as possible, and the parameters should be intuitive to choose. APCM has to exert strong control over the bandwidth correction process, i.e., the estimated bandwidth is directly scaled by the user-specified parameter $\alpha$ which is difficult to choose basing on intuition. In order to handle the uncertainty of the estimated bandwidth in a more fuzzy way, UPCM introduces an uncertainty parameter $\sigma_v$ to regulate the shape of the membership function. However, choosing $\sigma_v$ depends on the noise-level parameter $\alpha$. It is shown in \cite{hou_pcm_2016} that a small $\alpha$ should correspond to a small $\sigma_v$, and a large $\alpha$ to a large $\sigma_v$. So we can exploit this intuition to cancel out the parameter $\sigma_v$.
+2. The performance of clustering algorithm should be to background noise. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final result.
 *** Initialization
-It's shown in \cite{panda_comparing_2012} that kmeans is faster than FCM.
-over-specified number of clusters
-*** Mdelling the relation between $\alpha$ and $\sigma_v$
+Initialization is very essential in APCM and UPCM. The fist issue is that the clustering algorithm needs an over-specified number of clusters, so that there should be at least one clusters placed near each physical cluster. 
+It's shown in \cite{panda_comparing_2012} that kmeans is faster than FCM. So we choose kmeans get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points $\mathbf{x}_i$s that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
+#+BEGIN_LaTeX
+\begin{IEEEeqnarray}{ll}
+\label{npcm_ini}
+\boldsymbol{\theta}_j &= \frac{\Sigma_{i}\mathbf{x}_i}{n_j} \\
+\eta_j &= \frac{1}{n_j}\sum_{\mathbf{x}_i}||\mathbf{x}_i-\boldsymbol{\theta}_j||
+\end{IEEEeqnarray}
+#+END_LaTeX 
+
+The second issue that should be noticed is that the background noise clusters in the initial partition should be eliminated. We define the density of a cluster as:
+#+BEGIN_LaTeX
+\begin{equation}
+\rho_j=\frac{n_j}{\eta_j^d}
+\end{equation}
+#+END_LaTeX
+where $d$ is the dimension of $ \mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cluster $C_j$ is a noise cluster and eliminated if $\rho_j<\rho_0$.
+*** Modeling the relation between $\alpha$ and $\sigma_v$
+In UPCM, the noise-level $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. The interplay between $\alpha$ and $\sigma_v$ is simple and intuitive, i.e., a large specification of noise level $\alpha$ indicate that fewer points are actually contributed to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility to merge \cite{hou_pcm_2016}. 
+
+From , we can calculate the distance $d_{j\alpha}$ beyond which a point can't be used to contribute to the adaption of cluster $C_j$ by letting
+#+BEGIN_LaTeX
+\begin{equation}
+\exp\left(-\frac{(d_{j\alpha})^2}{\gamma_j}\right)=\alpha,
+\end{equation}
+#+END_LaTeX
+which leads to
+#+BEGIN_LaTeX
+\begin{equation}
+\label{npcm_d_alpha}
+d_{j\alpha}=\sqrt{-\ln\alpha}\left(\eta_j+\sqrt{-\ln\alpha}\sigma_v\right)
+\end{equation}
+#+END_LaTeX
+
+When there is no uncertainty in the estimated bandwidth, we get $d_{j\alpha}^0=\sqrt{-\ln\alpha}\eta_j$. For a fixed $\alpha$, a large $\sigma_v$ will cause $d_{j\alpha}$ to become larger, which reduces the effect of $\alpha$. This observation, together with the intuitive interplay between $\alpha$ and $\sigma_v$ we get from UPCM, suggests that we can explicitly specify a relation between $\alpha$ and $\sigma_v$. More specifically, we define the effect of $\sigma_v$ as the correction of $d_{j\alpha}^0$ by considering the uncertainty of the estimated bandwidth:
+#+BEGIN_LaTeX
+\begin{equation}
+\frac{d_{j\alpha}-d_{j\alpha}^0}{d_{j\alpha}^0}=\frac{\sqrt{-\ln\alpha}\sigma_v}{\eta_j}=0.2,
+\end{equation}
+#+END_LaTeX
+which leads to 
+#+BEGIN_LaTeX
+\begin{equation}
+\label{npcm_sig_alpha_relation}
+\sigma_v=0.2\frac{\eta_j}{\sqrt{-\ln\alpha}}
+\end{equation}
+#+END_LaTeX
+Note that we can choose a value that is not 0.2 in the above formulation. From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$, which meets the conclusion of UPCM.
+The noise-level $\alpha$ reflects the xx of two close clusters in the dataset.
 *** when the clustering process terminate
-*** handling noisy clusters
 *** summarize the algorithm in Algorithm template
 
 
