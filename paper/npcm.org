@@ -43,6 +43,8 @@ NPCM runs with two parameters, $m_{ini}$ is the potentially over-specified initi
 \end{abstract}
 #+END_LaTeX 
 ** Introduction
+Our contributions are summarized as follows:
+1. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final result.
 ** Background Knowledge and Motivations
 *** The PCM and APCM Clustering Algorithms
 The objective of Possibilistic c-means (PCM) \cite{krishnapuram_possibilistic_1993} is to minimize the following cost:
