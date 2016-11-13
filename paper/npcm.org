@@ -5,6 +5,8 @@
 #+DATE: 
 #+LATEX_CLASS: IEEEtran
 #+LaTeX_CLASS_OPTIONS: [journal]
+
+# The Theorem
 #+LATEX_HEADER: \usepackage[thmmarks, amsmath, thref]{ntheorem}
 #+LATEX_HEADER: \theoremstyle{definition}
 # Adds automatic line break, if heading is too long
@@ -15,7 +17,13 @@
 #+LATEX_HEADER: \theoremsymbol{\ensuremath{\blacksquare}}
 #+LATEX_HEADER: \newtheorem{definition}{Definition}
 
+# the Proposition
+#+LATEX_HEADER: \newtheorem{prop}{Proposition}
+
+# multi figures
 #+LATEX_HEADER: \usepackage[caption=false,font=footnotesize]{subfig}
+
+# The algorithm
 #+LATEX_HEADER: \usepackage{algorithm}
 #+LATEX_HEADER: \usepackage{algpseudocode}
 #+LATEX_HEADER: \renewcommand{\algorithmicrequire}{\textbf{Input:}}
@@ -23,16 +31,8 @@
 #+LATEX_HEADER: \renewcommand{\algorithmiccomment}[1]{{\hspace{-0.6cm}$\crhd$ {\it {#1}}}}
 
 
-# bold and italic vector
-#+LATEX_HEADER: \newcommand{\vect}[1]{\boldsymbol{#1}}
 # In IEEEtran_HOWTO the equations section on page 8. this 2500 config is to estore IEEEtran ability to automatically break within multiline equations
 #+LATEX_HEADER: \interdisplaylinepenalty=2500
-
-
-#+BEGIN_LaTeX
-\bibliographystyle{IEEEtran}
-\bibliography{D:/emacs/etc/ZoteroOutput,IEEEabrv}
-#+END_LaTeX
 
 #+TITLE: PCM Clustering based on Noise Level
 #+BEGIN_LaTeX
@@ -144,10 +144,16 @@ which leads to
 \sigma_v=0.2\frac{\eta_j}{\sqrt{-\ln\alpha}}
 \end{equation}
 #+END_LaTeX
-Note that we can choose a value that is not 0.2 in the above formulation. From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$.
-The noise-level $\alpha$ reflects the xx of two close clusters in the dataset.
+Note that we can choose a value that is not 0.2 in the above formulation. From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$. Then update of the membership function is modified as follows:
+#+BEGIN_LaTeX
+\begin{equation}
+\label{npcm_u_update}
+\mu_{ij}=\exp\left(-\frac{d_{ij}^2}{\gamma_j}\right)
+\end{equation}
+#+END_LaTeX
+where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{ij}\eta_j/\sqrt{-\ln\alpha}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$.
 *** The NPCM algorithm
-The convergence of the prototypes to the center of dense regions is given in Appendix . When convergence is reached, this is only one cluster in each physical cluster. However, it is seen from \eqref{npcm_sig_alpha_relation} that for cluster $C_j$, the adaption of $\eta_j$ is a positive feedback process, i.e., a large $\eta_j$ leads to a large $\sigma_v$ which means that there may be more points involved to calculate $\eta_j$, so $\eta_j$ in the next iteration may become larger. The benefit of this fact is that the generated $\eta_j$ can automatically increase to fit the physical cluster. But there can also be situations where cluster $C_j$ becomes unexpectedly larger, while the nearby cluster $C_k$ becomes unexpectedly smaller. Note that UPCM does not have this problem because all clusters have the same $\sigma_v$. To solve this problem, we modify the $\eta_j$ update as:
+The convergence of the prototypes to the center of dense regions is given in the Appendix. When convergence is reached, this is only one cluster in each physical cluster. However, it is seen from \eqref{npcm_sig_alpha_relation} that for cluster $C_j$, the adaption of $\eta_j$ is a positive feedback process, i.e., a large $\eta_j$ leads to a large $\sigma_v$ which means that there may be more points involved to calculate $\eta_j$, so $\eta_j$ in the next iteration may become larger. The benefit of this fact is that the generated $\eta_j$ can automatically increase to fit the physical cluster. But there can also be situations where cluster $C_j$ becomes unexpectedly larger, while the nearby cluster $C_k$ becomes unexpectedly smaller. Note that UPCM does not have this problem because all clusters have the same $\sigma_v$. To solve this problem, we modify the $\eta_j$ update as:
 #+BEGIN_LaTeX
 \begin{equation}
 \label{npcm_eta_update}
@@ -164,6 +170,8 @@ From the previous analysis, the NPCM algorithm can be summarized in Algorithm \r
 \begin{algorithmic}[1]
 \Require {$X$, $m_{ini}$, $\alpha$}
 \State $m=m_{ini}$
+\State \textbf{Set:} $\alpha=10^{-5}$ if $\alpha==0$
+\State \textbf{Set:} $\alpha=1-10^{-5}$ if $\alpha==1$
 \Statex {\Comment {Initialization and possible noise cluster elimination}}
 \State Run KMeans.
 \State Initialize $\theta_j$ and $\eta_j$ via \eqref{npcm_ini}
@@ -175,13 +183,13 @@ From the previous analysis, the NPCM algorithm can be summarized in Algorithm \r
 \State Update $U$ via \eqref{npcm_u_update}
 \State Update $\Theta$ via \eqref{upcm_theta_update}
 \Statex {\Comment {Possible cluster elimination}}
-\For{$i \leftarrow 1 \textbf{to} N$}
+\For{$i \leftarrow 1 \textbf{ to } N$}
 \State \textbf{Set:} $label(i)=r$ if $u_{ir}=\max_j u_{ij}$
 \EndFor
 \State Cluster $j$ is eliminated if $j \notin label$
 \State \textbf{Set:} $m=m-p$ if  $p$ clusters are eliminated
 \Statex {\Comment {Bandwidth update and possible cluster elimination}}
-\State Update $\eta_j$ via \eqref{upcm_eta_update}
+\State Update $\eta_j$ via \eqref{npcm_eta_update}
 \State Cluster $j$ is eliminated if $\eta_j=0$ (This happens if there is only one point in Cluster $j$)
 \State \textbf{Set:} $m=m-p$ if  $p$ clusters are eliminated
 \Until{the change in $\theta_j$'s between two successive iterations becomes sufficiently small}\\
@@ -190,3 +198,67 @@ From the previous analysis, the NPCM algorithm can be summarized in Algorithm \r
 \end{algorithm}
 #+END_LaTeX
 
+\appendix
+In this appendix, we prove the convergence of the prototypes to the center of dense regions. Because some convergence results of APCM \cite{xenaki_novel_2016} are applicable to NPCM, we only give the essential part of the proof. 
+
+We consider the continuous case where data points are modeled by a random variable $\mathbf{x}$ that follows a continuous pdf distribution $p(\mathbf{x})$. In this case, the update equations are given below:
+#+BEGIN_LaTeX
+\begin{equation}
+\boldsymbol{\theta}_j^{t+1}=\frac{\int_{R_j^t} u_{j}^t(\mathbf{x})\mathbf{x}p(\mathbf{x})d\mathbf{x}}{\int_{R_j^t} u_{j}^t(\mathbf{x})p(\mathbf{x})d\mathbf{x}} 
+\end{equation}
+#+END_LaTeX
+where $R_j^t=\{\mathbf{x}|u_{j}^t(\mathbf{x}) \geq \alpha\}$,
+#+BEGIN_LaTeX
+\begin{IEEEeqnarray}{ll}
+u_{j}^t(\mathbf{x}) &= \exp\left(\frac{||\mathbf{x}-\boldsymbol{\theta}_j^t||^2}{\gamma_j^t}\right) \\
+\gamma_j^t &= \left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{ij}\eta_j/\sqrt{-\ln\alpha}}\right)^2
+\end{IEEEeqnarray}
+#+END_LaTeX
+and 
+#+BEGIN_LaTeX
+\begin{equation}
+\eta_{j} = \frac{\int_{T_j^t} ||\mathbf{x}-\boldsymbol{\theta}_j^t||p(\mathbf{x})d\mathbf{x}}{\int_{T_j^t} p(\mathbf{x})d\mathbf{x}}
+\end{equation}
+#+END_LaTeX
+with $T_j^t=\{\mathbf{x}|u_{j}^t(\mathbf{x})=\max_r u_{r}^t(\mathbf{x}), u_{j}^t(\mathbf{x}) \geq 0.01\}$.
+
+The above equations define the iterative scheme $\boldsymbol{\theta}_j^{t+1}=f(\boldsymbol{\theta}_j^{t})$, where
+#+BEGIN_LaTeX
+\begin{equation}
+\label{npcm_iteration_scheme}
+f(\boldsymbol{\theta}_j^t)=\frac{\int_{R_j^t} \exp\left(-\frac{\|\mathbf{x}-\boldsymbol{\theta}_j^t\|^2}{\gamma_j^t}\right)\mathbf{x}p(\mathbf{x})d\mathbf{x}}{\int_{R_j^t} \exp\left(-\frac{\|\mathbf{x}-\boldsymbol{\theta}_j^t\|^2}{\gamma_j^t}\right)p(\mathbf{x})d\mathbf{x}} 
+\end{equation}
+#+END_LaTeX
+
+
+#+BEGIN_LaTeX
+\begin{prop}
+Assume that $p(\mathbf{x})$ is a zero mean normal distribution ${\cal N}(\mathbf{0},\sigma^2I)$. Then the center $\mathbf{c}=\mathbf{0}$ of $p(\mathbf{x})$ is a fixed point for the iterative scheme defined by \eqref{npcm_iteration_scheme}. Furthermore, the fixed point $\mathbf{0}$ of the scheme $\boldsymbol{\theta}^{t+1}=f(\boldsymbol{\theta}^{t})$ is stable.
+\label{prop_fix_stable}
+\end{prop}
+
+\begin{proof}[Proof]
+See the proof of Proposition 3 and Proposition 4 in \cite{xenaki_novel_2016}.
+\end{proof}
+#+END_LaTeX
+
+In the general case where data form more than one dense regions, Proposition \ref{prop_fix_stable} is still valid, assuming that a proper $\alpha$ is specified so that the influence on a prototype that belongs to a given dense region from points from other dense regions is negligible.
+
+#+BEGIN_LaTeX
+\begin{prop}
+Let $\boldsymbol{\theta}_1$, $\boldsymbol{\theta}_2$ be two cluster representatives with $\eta_1>\eta_2$. The geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{\alpha d_j(\mathbf{x})}{\eta_j\hat{\eta}}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|^2$, $j=1,2$, is the set of points that lie in the interior of the hypersphere $C$:
+\label{prop_fix_stable}
+\end{prop}
+
+\begin{proof}[Proof]
+See the proof of Proposition 3 and Proposition 4 in \cite{xenaki_novel_2016}.
+\end{proof}
+#+END_LaTeX
+
+
+
+
+#+BEGIN_LaTeX
+\bibliographystyle{IEEEtran}
+\bibliography{D:/emacs/etc/ZoteroOutput,IEEEabrv}
+#+END_LaTeX
