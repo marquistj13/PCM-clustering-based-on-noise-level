@@ -45,7 +45,7 @@ NPCM runs with two parameters, $m_{ini}$ is the potentially over-specified initi
 ** Introduction
 Our contributions are summarized as follows:
 1. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final result.
-** Background Knowledge and Motivations
+** Background Knowledge
 *** The PCM and APCM Clustering Algorithms
 The objective of Possibilistic c-means (PCM) \cite{krishnapuram_possibilistic_1993} is to minimize the following cost:
 #+BEGIN_LaTeX
@@ -78,14 +78,8 @@ The major problem of PCM is that its performance relies heavily on good initial 
 \gamma_j=\frac{\hat{\eta}}{\alpha}\eta_j
 \end{equation}
 #+END_LaTeX 
-where $\hat{\eta}$ is a constant defined as the minimum among all initial $\eta_j\text{s}$, $\hat{\eta}=\min_j\eta_j$, and $\alpha$ is chosen so that the quantity $\hat{\eta}/\alpha$ equals to the mean absolute deviation ($\eta_j$)  of the smallest physical cluster formed in the dataset. $\eta_j$ is initialized as
-#+BEGIN_LaTeX
-\begin{equation}
-\label{apcm_eta_init}
-\eta_j=\frac{\Sigma_{i=1}^Nu_{ij}^{FCM}d_{ij}}{\Sigma_{i=1}^Nu_{ij}^{FCM}}  
-\end{equation}
-#+END_LaTeX 
-where $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$, $\boldsymbol{\theta}_j\text{s}$ and $u_{ij}^{FCM}\text{s}$ in \eqref{apcm_eta_init} are the final parameter estimates obtained by FCM. $\eta_j$ is updated at each iteration as the /mean absolute deviation/ of the most compatible to cluster $C_j$ data points which form a set $A_j$, i.e., $A_j=\{\mathbf{x}_i|u_{ij}=\max_r u_{ir}\}$.
+where $\hat{\eta}$ is a constant defined as the minimum among all initial $\eta_j\text{s}$, $\hat{\eta}=\min_j\eta_j$, and $\alpha$ is chosen so that the quantity $\hat{\eta}/\alpha$ equals to the mean absolute deviation ($\eta_j$)  of the smallest physical cluster formed in the dataset.
+$\eta_j$ is updated at each iteration as the /mean absolute deviation/ of the most compatible to cluster $C_j$ data points which form a set $A_j$, i.e., $A_j=\{\mathbf{x}_i|u_{ij}=\max_r u_{ir}\}$.
 #+BEGIN_LaTeX
 \begin{equation}
 \label{apcm_eta_update}
@@ -93,14 +87,13 @@ where $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$, $\boldsymbol{\theta}_j\te
 \end{equation}
 #+END_LaTeX 
 where $n_j$ and $\boldsymbol{\mu}_j$ are the number of points in $A_j$ and the mean vector of points in $A_j$ respectively.
-*** Conditional Fuzzy Set
-*** The UPCM Algorithm
+*** Conditional Fuzzy Set and the UPCM Algorithm
 The unified framework (UPCM) of PCM and APCM controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
 ** Our Algorithm
 *** Motivations
-1. The clustering algorithm should have as less parameters as possible, and the parameters should be intuitive to choose. APCM has to exert strong control over the bandwidth correction process, i.e., the estimated bandwidth is directly scaled by the user-specified parameter $\alpha$ which is difficult to choose basing on intuition. In order to handle the uncertainty of the estimated bandwidth in a more fuzzy way, UPCM introduces an uncertainty parameter $\sigma_v$ to regulate the shape of the membership function. However, choosing $\sigma_v$ depends on the noise-level parameter $\alpha$. It is shown in \cite{hou_pcm_2016} that a small $\alpha$ should correspond to a small $\sigma_v$, and a large $\alpha$ to a large $\sigma_v$. So we can exploit this intuition to cancel out the parameter $\sigma_v$.
-2. The performance of clustering algorithm should be to background noise. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final result.
-*** Initialization
+1. The performance of clustering algorithm should be robust to background noise. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final result.
+2. The clustering algorithm should have as less parameters as possible, and the parameters should be intuitive to choose. APCM has to exert strong control over the bandwidth correction process, i.e., the estimated bandwidth is directly scaled by the user-specified parameter $\alpha$ which is difficult to choose basing on intuition. In order to handle the uncertainty of the estimated bandwidth in a more fuzzy way, UPCM introduces an uncertainty parameter $\sigma_v$ to regulate the shape of the membership function. However, choosing $\sigma_v$ depends on the noise-level parameter $\alpha$. The experiments in \cite{hou_pcm_2016} suggest that a small $\alpha$ should correspond to a small $\sigma_v$, and a large $\alpha$ to a large $\sigma_v$. So we can exploit this intuition to cancel out the parameter $\sigma_v$.
+*** Initialization in NPCM
 Initialization is very essential in APCM and UPCM. The fist issue is that the clustering algorithm needs an over-specified number of clusters, so that there should be at least one clusters placed near each physical cluster. 
 It's shown in \cite{panda_comparing_2012} that kmeans is faster than FCM. So we choose kmeans get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points $\mathbf{x}_i$s that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
 #+BEGIN_LaTeX
@@ -114,12 +107,15 @@ It's shown in \cite{panda_comparing_2012} that kmeans is faster than FCM. So we 
 The second issue that should be noticed is that the background noise clusters in the initial partition should be eliminated. We define the density of a cluster as:
 #+BEGIN_LaTeX
 \begin{equation}
+\label{npcm_density}
 \rho_j=\frac{n_j}{\eta_j^d}
 \end{equation}
 #+END_LaTeX
-where $d$ is the dimension of $ \mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cluster $C_j$ is a noise cluster and eliminated if $\rho_j<\rho_0$.
+where $d$ is the dimension of $\mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cluster $C_j$ is a noise cluster and eliminated if $\rho_j<0.1\rho_0$.
 *** Modeling the relation between $\alpha$ and $\sigma_v$
-In UPCM, the noise-level $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. The interplay between $\alpha$ and $\sigma_v$ is simple and intuitive, i.e., a large specification of noise level $\alpha$ indicate that fewer points are actually contributed to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility to merge \cite{hou_pcm_2016}. 
+In UPCM, the noise-level $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. The interplay between $\alpha$ and $\sigma_v$ is simple and intuitive, i.e., a large specification of noise level $\alpha$ means that fewer points (that we consider as good points) are actually contributed to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility to merge; on the other hand, a small specification of $\alpha$ means that we are less uncertain about the estimated bandwidth, and more points are contributed to the adaption of $\boldsymbol{\theta}_j$, so we should also specify a small $\sigma_v$, and a large $\alpha$ should correspond to a large $\sigma_v$ \cite{hou_pcm_2016}. 
+
+Before proceeding, we review the the role of $\sigma_v$ in the clustering process of UPCM, which offers us insights into fuzzy clustering. UPCM exploits the conditional fuzzy set to incorporate the uncertainty of the estimated bandwidth. As can be seen from , the shape of the membership function becomes flatter when $\sigma_v$ or $d_{ij}$ increases. Note that a larger bandwidth corresponds a flatter membership curve. This observation suggests that the bandwidth itself can indicate the uncertainty of the estimated bandwidth, i.e., a large estimated bandwidth should correspond to a large $\sigma_v$.
 
 From , we can calculate the distance $d_{j\alpha}$ beyond which a point can't be used to contribute to the adaption of cluster $C_j$ by letting
 #+BEGIN_LaTeX
@@ -148,13 +144,49 @@ which leads to
 \sigma_v=0.2\frac{\eta_j}{\sqrt{-\ln\alpha}}
 \end{equation}
 #+END_LaTeX
-Note that we can choose a value that is not 0.2 in the above formulation. From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$, which meets the conclusion of UPCM.
+Note that we can choose a value that is not 0.2 in the above formulation. From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$.
 The noise-level $\alpha$ reflects the xx of two close clusters in the dataset.
-*** when the clustering process terminate
-*** summarize the algorithm in Algorithm template
+*** The NPCM algorithm
+The convergence of the prototypes to the center of dense regions is given in Appendix . When convergence is reached, this is only one cluster in each physical cluster. However, it is seen from \eqref{npcm_sig_alpha_relation} that for cluster $C_j$, the adaption of $\eta_j$ is a positive feedback process, i.e., a large $\eta_j$ leads to a large $\sigma_v$ which means that there may be more points involved to calculate $\eta_j$, so $\eta_j$ in the next iteration may become larger. The benefit of this fact is that the generated $\eta_j$ can automatically increase to fit the physical cluster. But there can also be situations where cluster $C_j$ becomes unexpectedly larger, while the nearby cluster $C_k$ becomes unexpectedly smaller. Note that UPCM does not have this problem because all clusters have the same $\sigma_v$. To solve this problem, we modify the $\eta_j$ update as:
+#+BEGIN_LaTeX
+\begin{equation}
+\label{npcm_eta_update}
+\eta_j=\frac{1}{n_j}\sum_{\mathbf{x}_i\in A_j}||\mathbf{x}_i-\boldsymbol{\theta}_j|| \quad \text{for}\;u_{ij} \geq 0.01.
+\end{equation}
+#+END_LaTeX
+where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The rationale is that, a point $\mathbf{x}_i$ near the boundary of two clusters can't be directly used to update $\eta_j\text{s}$ because of the possible noise in $\mathbf{x}_i$, and by so doing, the iteration times may also be reduced.
 
-
-
-
-
+From the previous analysis, the NPCM algorithm can be summarized in Algorithm \ref{alg:npcm}.
+#+BEGIN_LaTeX
+\begin{algorithm}[H]
+\caption{ [$\Theta$, $U$, $label$] = NPCM($X$, $m_{ini}$, $\alpha$)}
+\label{alg:npcm}
+\begin{algorithmic}[1]
+\Require {$X$, $m_{ini}$, $\alpha$}
+\State $m=m_{ini}$
+\Statex {\Comment {Initialization and possible noise cluster elimination}}
+\State Run KMeans.
+\State Initialize $\theta_j$ and $\eta_j$ via \eqref{npcm_ini}
+\State Caculate $\rho_j$ via \eqref{npcm_density}
+\State \textbf{Set:} $\rho_0=\max_j\rho_j$
+\State Cluster $j$ is eliminated if $\rho_j<0.1\rho_0$
+\State \textbf{Set:} $m=m-p$ if $p$ clusters are eliminated
+\Repeat
+\State Update $U$ via \eqref{npcm_u_update}
+\State Update $\Theta$ via \eqref{upcm_theta_update}
+\Statex {\Comment {Possible cluster elimination}}
+\For{$i \leftarrow 1 \textbf{to} N$}
+\State \textbf{Set:} $label(i)=r$ if $u_{ir}=\max_j u_{ij}$
+\EndFor
+\State Cluster $j$ is eliminated if $j \notin label$
+\State \textbf{Set:} $m=m-p$ if  $p$ clusters are eliminated
+\Statex {\Comment {Bandwidth update and possible cluster elimination}}
+\State Update $\eta_j$ via \eqref{upcm_eta_update}
+\State Cluster $j$ is eliminated if $\eta_j=0$ (This happens if there is only one point in Cluster $j$)
+\State \textbf{Set:} $m=m-p$ if  $p$ clusters are eliminated
+\Until{the change in $\theta_j$'s between two successive iterations becomes sufficiently small}\\
+\Return {$\Theta$, $U$, $label$}
+\end{algorithmic}
+\end{algorithm}
+#+END_LaTeX
 
