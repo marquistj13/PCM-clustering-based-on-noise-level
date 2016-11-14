@@ -6,7 +6,6 @@
 #+LATEX_CLASS: IEEEtran
 #+LaTeX_CLASS_OPTIONS: [journal]
 
-# The Theorem
 #+LATEX_HEADER: \usepackage[thmmarks, amsmath, thref]{ntheorem}
 #+LATEX_HEADER: \theoremstyle{definition}
 # Adds automatic line break, if heading is too long
@@ -15,8 +14,10 @@
 #+LATEX_HEADER: \theoremseparator{:}
 #+LATEX_HEADER: \theorembodyfont{\normalfont}
 #+LATEX_HEADER: \theoremsymbol{\ensuremath{\blacksquare}}
+# The Theorem
 #+LATEX_HEADER: \newtheorem{definition}{Definition}
-
+# The Proof
+#+LATEX_HEADER: \newtheorem*{proof}{Proof}
 # the Proposition
 #+LATEX_HEADER: \newtheorem{prop}{Proposition}
 
@@ -237,7 +238,7 @@ Assume that $p(\mathbf{x})$ is a zero mean normal distribution ${\cal N}(\mathbf
 \label{prop_fix_stable}
 \end{prop}
 
-\begin{proof}[Proof]
+\begin{proof}
 See the proof of Proposition 3 and Proposition 4 in \cite{xenaki_novel_2016}.
 \end{proof}
 #+END_LaTeX
@@ -250,7 +251,7 @@ Let $\boldsymbol{\theta}_1$, $\boldsymbol{\theta}_2$ be two cluster prototypes w
 \label{prop_eliminate}
 \end{prop}
 
-\begin{proof}[Proof]
+\begin{proof}
  We first calculate the geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{d_j^2(\mathbf{x})}{\gamma_j}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|2$, $j=1,2$.
 From \eqref{npcm_d_alpha} and \eqref{npcm_sig_alpha_relation}, we get $d_{u_1}=\sqrt{-\ln u_1}\left(\eta_1+\sqrt{-\ln u_1}\sigma_{v_1}\right)=1.2\sqrt{-\ln u_1}\eta_1$ and $d_{u_2}=1.2\sqrt{-\ln u_2}\eta_2$, where we use $u_1$ and $u_2$ to represent $u_1(\mathbf{x})$ and $u_2(\mathbf{x})$ respectively. 
 
