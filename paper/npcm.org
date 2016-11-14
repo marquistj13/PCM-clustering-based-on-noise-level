@@ -197,7 +197,7 @@ From the previous analysis, the NPCM algorithm can be summarized in Algorithm \r
 \end{algorithmic}
 \end{algorithm}
 #+END_LaTeX
-
+*** ApTEMPT
 \appendix
 In this appendix, we prove the convergence of the prototypes to the center of dense regions. Because some convergence results of APCM \cite{xenaki_novel_2016} are applicable to NPCM, we only give the essential part of the proof. 
 
@@ -211,16 +211,16 @@ where $R_j^t=\{\mathbf{x}|u_{j}^t(\mathbf{x}) \geq \alpha\}$,
 #+BEGIN_LaTeX
 \begin{IEEEeqnarray}{ll}
 u_{j}^t(\mathbf{x}) &= \exp\left(\frac{||\mathbf{x}-\boldsymbol{\theta}_j^t||^2}{\gamma_j^t}\right) \\
-\gamma_j^t &= \left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{ij}\eta_j/\sqrt{-\ln\alpha}}\right)^2
+\gamma_j^t &= \left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{j}\eta_j/\sqrt{-\ln\alpha}}\right)^2
 \end{IEEEeqnarray}
 #+END_LaTeX
 and 
 #+BEGIN_LaTeX
 \begin{equation}
-\eta_{j} = \frac{\int_{T_j^t} ||\mathbf{x}-\boldsymbol{\theta}_j^t||p(\mathbf{x})d\mathbf{x}}{\int_{T_j^t} p(\mathbf{x})d\mathbf{x}}
+\eta_{j} = \frac{\int_{T_j^{t}} ||\mathbf{x}-\boldsymbol{\theta}_j^{t}||p(\mathbf{x})d\mathbf{x}}{\int_{T_j^{t}} p(\mathbf{x})d\mathbf{x}}
 \end{equation}
 #+END_LaTeX
-with $T_j^t=\{\mathbf{x}|u_{j}^t(\mathbf{x})=\max_r u_{r}^t(\mathbf{x}), u_{j}^t(\mathbf{x}) \geq 0.01\}$.
+with $T_j^{t}=\{\mathbf{x}|u_{j}^{t}(\mathbf{x})=\max_r u_{r}^{t}(\mathbf{x}), u_{j}^t(\mathbf{x}) \geq 0.01\}$.
 
 The above equations define the iterative scheme $\boldsymbol{\theta}_j^{t+1}=f(\boldsymbol{\theta}_j^{t})$, where
 #+BEGIN_LaTeX
@@ -246,12 +246,34 @@ In the general case where data form more than one dense regions, Proposition \re
 
 #+BEGIN_LaTeX
 \begin{prop}
-Let $\boldsymbol{\theta}_1$, $\boldsymbol{\theta}_2$ be two cluster representatives with $\eta_1>\eta_2$. The geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{\alpha d_j(\mathbf{x})}{\eta_j\hat{\eta}}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|^2$, $j=1,2$, is the set of points that lie in the interior of the hypersphere $C$:
-\label{prop_fix_stable}
+Let $\boldsymbol{\theta}_1$, $\boldsymbol{\theta}_2$ be two cluster prototypes with $\eta_1>\eta_2$ in the same dense region. Then cluster $C_2$ represented by $\boldsymbol{\theta}_2$ will be eliminated.
+\label{prop_eliminate}
 \end{prop}
 
 \begin{proof}[Proof]
-See the proof of Proposition 3 and Proposition 4 in \cite{xenaki_novel_2016}.
+ We first calculate the geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{d_j^2(\mathbf{x})}{\gamma_j}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|2$, $j=1,2$.
+From \eqref{npcm_d_alpha} and \eqref{npcm_sig_alpha_relation}, we get $d_{u_1}=\sqrt{-\ln u_1}\left(\eta_1+\sqrt{-\ln u_1}\sigma_{v_1}\right)=1.2\sqrt{-\ln u_1}\eta_1$ and $d_{u_2}=1.2\sqrt{-\ln u_2}\eta_2$, where we use $u_1$ and $u_2$ to represent $u_1(\mathbf{x})$ and $u_2(\mathbf{x})$ respectively. 
+
+For the points $\mathbf{x}$ that meet $u_1<u_2$, we have 
+\begin{equation*}
+\frac{d_{u_1}}{d_{u_2}}=\frac{1.2\sqrt{-\ln u_1}\eta_1}{1.2\sqrt{-\ln u_2}\eta_2}>\frac{\eta_1}{\eta_2}(1+\epsilon)=k'>\frac{\eta_1}{\eta_2}=k>1
+\end{equation*}
+where $\epsilon\in(0,+\infty)$. Then we get $\|\mathbf{x} - \boldsymbol{\theta}_1\|^2 > k'\|\mathbf{x} - \boldsymbol{\theta}_2\|^2$, and we have after some algebra
+\begin{equation}
+\label{hypersphere}
+\|\mathbf{x}-\frac{k'\boldsymbol{\theta}_2-\boldsymbol{\theta}_1}{k'-1}\|^2 = \frac{k'}{(k'-1)^2}\|\boldsymbol{\theta}_2-\boldsymbol{\theta}_1\|^2\equiv r^2
+\end{equation}
+
+Utilizing Proposition \ref{prop_fix_stable}, we have that $\boldsymbol{\theta}_1$ and $\boldsymbol{\theta}_2$ converge towards $\mathbf{c}$. Thus, the distance between them decreases towards zero, i.e., 
+\begin{equation}
+\|\boldsymbol{\theta}_1(t)-\boldsymbol{\theta}_2(t)\|\rightarrow 0
+\label{eqprop51}
+\end{equation}		
+
+So the radius $r$ in \eqref{hypersphere} tends to zero as $t$ increases, which means that there will be no points in Cluster $C_2$ and $C_2$ will be eliminated.
+
+Note that $k'$ is larger than the $k$ used in the proof of APCM, so convergence of NPCM is faster than APCM. 
+See the proof of Proposition 2 and Proposition 5 in \cite{xenaki_novel_2016} for details.
 \end{proof}
 #+END_LaTeX
 
