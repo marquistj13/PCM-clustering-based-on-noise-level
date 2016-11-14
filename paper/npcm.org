@@ -99,9 +99,8 @@ Initialization is very essential in APCM and UPCM. The fist issue is that the cl
 It's shown in \cite{panda_comparing_2012} that kmeans is faster than FCM. So we choose kmeans get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points $\mathbf{x}_i$s that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
 #+BEGIN_LaTeX
 \begin{IEEEeqnarray}{ll}
-\label{npcm_ini}
-\boldsymbol{\theta}_j &= \frac{\Sigma_{i}\mathbf{x}_i}{n_j} \\
-\eta_j &= \frac{1}{n_j}\sum_{\mathbf{x}_i}||\mathbf{x}_i-\boldsymbol{\theta}_j||
+\boldsymbol{\theta}_j &= \frac{\Sigma_{i}\mathbf{x}_i}{n_j} \label{npcm_ini_theta}\\
+\eta_j &= \frac{1}{n_j}\sum_{\mathbf{x}_i}||\mathbf{x}_i-\boldsymbol{\theta}_j|| \label{npcm_ini_eta}
 \end{IEEEeqnarray}
 #+END_LaTeX 
 
@@ -114,9 +113,9 @@ The second issue that should be noticed is that the background noise clusters in
 #+END_LaTeX
 where $d$ is the dimension of $\mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cluster $C_j$ is a noise cluster and eliminated if $\rho_j<0.1\rho_0$.
 *** Modeling the relation between $\alpha$ and $\sigma_v$
-In UPCM, the noise-level $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. The interplay between $\alpha$ and $\sigma_v$ is simple and intuitive, i.e., a large specification of noise level $\alpha$ means that fewer points (that we consider as good points) are actually contributed to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility to merge; on the other hand, a small specification of $\alpha$ means that we are less uncertain about the estimated bandwidth, and more points are contributed to the adaption of $\boldsymbol{\theta}_j$, so we should also specify a small $\sigma_v$, and a large $\alpha$ should correspond to a large $\sigma_v$ \cite{hou_pcm_2016}. 
+In UPCM, the noise-level parameter $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. Specifically, $\alpha$ measures the closeness of two clusters in the clustering result. When a large $\alpha$ is specified, we consider that there may be clusters very close to each other, and the $\eta_j$ estimated in this case may be very uncertain. With the above interpretation of $\alpha$, the interplay between $\alpha$ and $\sigma_v$ becomes simple and intuitive, i.e., a large specification of noise level $\alpha$ means that fewer points (that we consider as good points) are actually contributed to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility to merge; on the other hand, a small specification of $\alpha$ means that we are less uncertain about the estimated bandwidth, and more points are contributed to the adaption of $\boldsymbol{\theta}_j$, so we should also specify a small $\sigma_v$ \cite{hou_pcm_2016}. 
 
-Before proceeding, we review the the role of $\sigma_v$ in the clustering process of UPCM, which offers us insights into fuzzy clustering. UPCM exploits the conditional fuzzy set to incorporate the uncertainty of the estimated bandwidth. As can be seen from , the shape of the membership function becomes flatter when $\sigma_v$ or $d_{ij}$ increases. Note that a larger bandwidth corresponds a flatter membership curve. This observation suggests that the bandwidth itself can indicate the uncertainty of the estimated bandwidth, i.e., a large estimated bandwidth should correspond to a large $\sigma_v$.
+Before proceeding, we review the the role of $\sigma_v$ in the clustering process of UPCM, which offers us insights into fuzzy clustering. UPCM exploits the conditional fuzzy set to incorporate the uncertainty of the estimated bandwidth. As can be seen from , the shape of the membership function becomes flatter when $\sigma_v$ or $d_{ij}$ increases. Note that a larger bandwidth corresponds a flatter membership curve. This observation suggests that the bandwidth itself can indicate the uncertainty of the estimated bandwidth, i.e., a large estimated bandwidth should correspond to a large $\sigma_v$. We will see that the formulation of NPCM meets this requirement.
 
 From , we can calculate the distance $d_{j\alpha}$ beyond which a point can't be used to contribute to the adaption of cluster $C_j$ by letting
 #+BEGIN_LaTeX
@@ -154,14 +153,14 @@ Note that we can choose a value that is not 0.2 in the above formulation. From \
 #+END_LaTeX
 where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{ij}\eta_j/\sqrt{-\ln\alpha}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$.
 *** The NPCM algorithm
-The convergence of the prototypes to the center of dense regions is given in the Appendix. When convergence is reached, this is only one cluster in each physical cluster. However, it is seen from \eqref{npcm_sig_alpha_relation} that for cluster $C_j$, the adaption of $\eta_j$ is a positive feedback process, i.e., a large $\eta_j$ leads to a large $\sigma_v$ which means that there may be more points involved to calculate $\eta_j$, so $\eta_j$ in the next iteration may become larger. The benefit of this fact is that the generated $\eta_j$ can automatically increase to fit the physical cluster. But there can also be situations where cluster $C_j$ becomes unexpectedly larger, while the nearby cluster $C_k$ becomes unexpectedly smaller. Note that UPCM does not have this problem because all clusters have the same $\sigma_v$. To solve this problem, we modify the $\eta_j$ update as:
+The proof of cluster elimination and convergence of the prototypes to the center of dense regions is given in the Appendix. When convergence is reached, there is only one cluster in each physical cluster. However, it is seen from \eqref{npcm_sig_alpha_relation} that for cluster $C_j$, the adaption of $\eta_j$ is a positive feedback process, i.e., a large $\eta_j$ leads to a large $\sigma_v$ which means that there may be more points involved to calculate $\eta_j$, so $\eta_j$ in the next iteration may become larger. The benefit of this fact is that the generated $\eta_j$ can automatically increase to fit the physical cluster. But there can also be situations where cluster $C_j$ becomes unexpectedly large because boundary points between $C_j$ and other clusters gradually become points of $C_j$ due to the positive feedback process, and as a result, $\eta_k$ of the nearby smaller cluster $C_k$ is under-estimated. Note that UPCM does not have this problem because all clusters in UPCM have the same $\sigma_v$. To solve this problem, we modify the $\eta_j$ update as:
 #+BEGIN_LaTeX
 \begin{equation}
 \label{npcm_eta_update}
 \eta_j=\frac{1}{n_j}\sum_{\mathbf{x}_i\in A_j}||\mathbf{x}_i-\boldsymbol{\theta}_j|| \quad \text{for}\;u_{ij} \geq 0.01.
 \end{equation}
 #+END_LaTeX
-where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The rationale is that, a point $\mathbf{x}_i$ near the boundary of two clusters can't be directly used to update $\eta_j\text{s}$ because of the possible noise in $\mathbf{x}_i$, and by so doing, the iteration times may also be reduced.
+where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The rationale is that, the update process of $\eta_j$ should not be too sensitive to the point $\mathbf{x}_i$ near the boundary of clusters, and by so doing, the iteration times may also be reduced.
 
 From the previous analysis, the NPCM algorithm can be summarized in Algorithm \ref{alg:npcm}.
 #+BEGIN_LaTeX
@@ -175,7 +174,7 @@ From the previous analysis, the NPCM algorithm can be summarized in Algorithm \r
 \State \textbf{Set:} $\alpha=1-10^{-5}$ if $\alpha==1$
 \Statex {\Comment {Initialization and possible noise cluster elimination}}
 \State Run KMeans.
-\State Initialize $\theta_j$ and $\eta_j$ via \eqref{npcm_ini}
+\State Initialize $\theta_j$ and $\eta_j$ via \eqref{npcm_ini_theta} and \eqref{npcm_ini_eta}
 \State Caculate $\rho_j$ via \eqref{npcm_density}
 \State \textbf{Set:} $\rho_0=\max_j\rho_j$
 \State Cluster $j$ is eliminated if $\rho_j<0.1\rho_0$
@@ -200,7 +199,7 @@ From the previous analysis, the NPCM algorithm can be summarized in Algorithm \r
 #+END_LaTeX
 *** ApTEMPT
 \appendix
-In this appendix, we prove the convergence of the prototypes to the center of dense regions. Because some convergence results of APCM \cite{xenaki_novel_2016} are applicable to NPCM, we only give the essential part of the proof. 
+In this appendix, we prove the cluster elimination and the convergence of the prototypes to the center of dense regions. Because some convergence results of APCM \cite{xenaki_novel_2016} are applicable to NPCM, we only give the essential part of the proof. 
 
 We consider the continuous case where data points are modeled by a random variable $\mathbf{x}$ that follows a continuous pdf distribution $p(\mathbf{x})$. In this case, the update equations are given below:
 #+BEGIN_LaTeX
