@@ -47,6 +47,7 @@ NPCM runs with two parameters, $m_{ini}$ is the potentially over-specified initi
 Our contributions are summarized as follows:
 1. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final result.
 ** Background Knowledge
+In this section, we provide the background knowledge for our work. We first review the PCM and APCM. Then, we review the conditional fuzzy set framework and UPCM.
 *** The PCM and APCM Clustering Algorithms
 The objective of Possibilistic c-means (PCM) \cite{krishnapuram_possibilistic_1993} is to minimize the following cost:
 #+BEGIN_LaTeX
@@ -88,8 +89,44 @@ $\eta_j$ is updated at each iteration as the /mean absolute deviation/ of the mo
 \end{equation}
 #+END_LaTeX 
 where $n_j$ and $\boldsymbol{\mu}_j$ are the number of points in $A_j$ and the mean vector of points in $A_j$ respectively.
-*** Conditional Fuzzy Set and the UPCM Algorithm
-The unified framework (UPCM) of PCM and APCM controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
+*** The Conditional Fuzzy Set and the UPCM Algorithm
+According to Zadeh \cite{zadeh_concept_1975}, a type-2 fuzzy set (T2 FS) is a fuzzy set whose membership values are type-1 fuzzy sets on $[0,1]$. However, the conventional type-2 fuzzy set definition (e.g., \cite{mendel_type-2_2002}) makes T2 FS a complex subject. To simplify this problem, Li-Xin Wang \cite{wang_new_2016} proposes a conditional fuzzy set framework: Let $X$ and $V$ be fuzzy sets defined on $\Omega_X$ and $\Omega_Y$, respectively. A \emph{conditional fuzzy set}, denoted as $X|V$, is a fuzzy set defined on $\Omega_X$ with membership function:
+#+BEGIN_LaTeX
+\begin{equation}
+\mu_{X|V}(x|V),\quad  x\in\Omega_X
+\end{equation}
+#+END_LaTeX
+depending on the fuzzy set $V$ whose membership function is $\mu_V(v)$ with $v\in\Omega_V$. The x is called the \emph{primary variable} and $v$ is called the \emph{secondary variable}; the membership function $\mu_{X|V}(x|V)$ characterizes the \emph{primary fuzziness} while the membership function $\mu_V(v)$ characterizes the \emph{secondary fuzziness}. This framework provides a much more natural framework to model the dependence of one fuzziness (uncertainty) on another fuzziness than the type-2 fuzzy set formulation \cite{wang_new_2016}.
+
+A related concept is the marginal fuzzy set of $X|V$, denoted as $X$, which is a type-1 fuzzy set on $\Omega_X$ whose membership function $\mu_X(x)$ is determined through Zadeh's Compositional Rule of Inference:
+#+BEGIN_LaTeX
+\begin{equation}
+\label{marginal_fs}
+\mu_X(x)=\max_{v\in\Omega_V}\min[\mu_{X|V}(x|v),\mu_V(v)],\;\;x\in\Omega_X.
+\end{equation}
+\end{definition}
+#+END_LaTeX
+Then the basic philosophy to deal with type-2 fuzziness is to use \eqref{marginal_fs} to "cancel out" the secondary fuzziness $V$ and transform the type-2 problems back to the ordinary type-1 framework. We can explicitly model the uncertainty of the membership caused by some parameter $V$ and "cancel" $V$ to get the type-1 marginal fuzzy set. Then the effect of the uncertainty of $V$ is incorporated into type-1 marginal fuzzy set.
+
+We include an example adopted from \cite{hou_pcm_2016} to illustrate the incorporation of uncertainty. Suppose that we want to consider the uncertainty of $\mu_X(x)$ caused by the uncertainty of the bandwidth parameter $V$.
+First, the conditional fuzzy set $X|V$ is constructed as $\mu_{X|V}(x|V)=\exp\left(-\frac{|x-x_0|^2}{V^2}\right)$, and the uncertainty (fuzziness) of $V$ is also modeled as a Gaussian fuzzy set with the membership function $\mu_V(v)=\exp\left(-\frac{(v-v_0)^2}{\sigma^2_v}\right)$, where $\sigma_v$ is a given constant which represents the uncertainty of parameter $V$. Then according to \eqref{marginal_fs}, the membership function of the marginal fuzzy set $X$ is $\mu_X(x)&=\exp\left(-\frac{|x-x_0|^2}{v_{new}}\right)$, where $v_{new}=\left(0.5v_0+0.5\sqrt{v_0^2+4\sigma_v|x-x_0|}\right)^2$. The above result can be generalized by replacing $|x-c|$ with $d(\mathbf{x}_i,\mathbf{x}_0)$.
+Fig.\ref{marginal_fuzziness} shows the marginal fuzzy set into which the uncertainty has been incorporated when $x_0$ is estimated as 12.5 and $v_0$ is estimated as 2.5 but with uncertainty. We can see that membership function curves with $\sigma_v>0$ deviates much from the one with $\sigma_v=0$ only when $d(\mathbf{x}_i,\mathbf{x}_0)$ is large. In other words, the degree of deviation is controlled by $\sigma_v$ and $d(\mathbf{x}_i,\mathbf{x}_0)$.
+
+The unified framework (UPCM \cite{hou_pcm_2016}) utilizes the conditional fuzzy set to incorporate fuzziness (uncertainty) in the estimated bandwidth to the fuzziness of the membership function of points. Specifically, the update of the membership function \eqref{pcm_theta_update} is modified as follows:
+#+BEGIN_LaTeX
+\begin{equation}
+\label{upcm_u_update}
+\mu_{ij}=\exp\left(-\frac{d_{ij}^2}{\gamma_j}\right)
+\end{equation}
+#+END_LaTeX
+where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+4\sigma_vd_{ij}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$. Another feature of UPCM is that UPCM introduces the concept of /noise level/ $\alpha$ of the data set in the update equation of prototypes:
+#+BEGIN_LaTeX
+\begin{equation}
+\label{upcm_theta_update}
+\boldsymbol{\theta}_j=\frac{\Sigma_{i=1}^Nu_{ij}\mathbf{x}_i}{\Sigma_{i=1}^Nu_{ij}} \quad \text{for}\;u_{ij}\geq \alpha.
+\end{equation}
+#+END_LaTeX 
+By setting an appropriate $\alpha$, the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update is reduced. This feature allows us to control the closeness of clusters in the clustering result.
 ** Our Algorithm
 In this section, we first present motivations of proposed noise-level based PCM clustering algorithm (NPCM), which is developed based on UPCM. To address the issue of background noise clusters, we propose to eliminate low-density clusters in the initial partition. Then, we cancel out the parameter $\sigma_v$ in UPCM by utilizing the interplay between $\alpha$ and $\sigma_v$. Finally, we analyze the benefit and the problem after adopting the adaptive $\sigma_v$ approach in NPCM, and summarize the algorithm in Algorithm \ref{alg:npcm}.
 *** Motivations
