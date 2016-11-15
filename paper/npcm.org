@@ -49,7 +49,7 @@ Our contributions are summarized as follows:
 
 
 ** Background Knowledge
-In this section, we provide the background knowledge for our work. We first review the PCM and APCM. Then, we review the conditional fuzzy set framework and UPCM.
+In this section, we provide the background knowledge for our work. The PCM and APCM algorithms are first reviewed. Then, we review the UPCM algorithm, which utilizes the conditional fuzzy set framework to control the bandwidth of the membership function of points in a more natural and flexible way than APCM.
 *** The PCM and APCM Clustering Algorithms
 The objective of Possibilistic c-means (PCM) \cite{krishnapuram_possibilistic_1993} is to minimize the following cost:
 #+BEGIN_LaTeX
@@ -117,7 +117,9 @@ The unified framework (UPCM \cite{hou_pcm_2016}) utilizes the conditional fuzzy 
 \mu_{ij}=\exp\left(-\frac{d_{ij}^2}{\gamma_j}\right)
 \end{equation}
 #+END_LaTeX
-where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+4\sigma_vd_{ij}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$. Another feature of UPCM is that UPCM introduces the concept of /noise level/ $\alpha$ of the data set in the update equation of prototypes:
+where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+4\sigma_vd_{ij}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$.
+The bandwidth correction of \eqref{upcm_u_update} is more natural and flexible than that of that of \eqref{corrected_eta}.
+Another feature of UPCM is that UPCM introduces the concept of /noise level/ $\alpha$ of the data set in the update equation of prototypes:
 #+BEGIN_LaTeX
 \begin{equation}
 \label{upcm_theta_update}
