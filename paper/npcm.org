@@ -98,7 +98,7 @@ According to Zadeh \cite{zadeh_concept_1975}, a type-2 fuzzy set (T2 FS) is a fu
 \mu_{X|V}(x|V)
 \end{equation}
 #+END_LaTeX
-depending on the fuzzy set $V$ whose membership function is $\mu_V(v)$. $\mu_{X|V}(x|V)$ characterizes the \emph{primary fuzziness} while $\mu_V(v)$ characterizes the \emph{secondary fuzziness}. This framework provides a much more natural framework to model the dependence of one fuzziness (uncertainty) on another fuzziness than the type-2 fuzzy set formulation \cite{wang_new_2016}.
+depending on the fuzzy set $V$ whose membership function is $\mu_V(v)$. The membership function $\mu_{X|V}(x|V)$ characterizes the \emph{primary fuzziness} while $\mu_V(v)$ characterizes the \emph{secondary fuzziness}. This framework provides a much more natural framework to model the dependence of one fuzziness (uncertainty) on another fuzziness than the type-2 fuzzy set formulation \cite{wang_new_2016}.
 
 A related concept is the marginal fuzzy set of $X|V$, denoted as $X$, which is a type-1 fuzzy set whose membership function $\mu_X(x)$ is determined through Zadeh's Compositional Rule of Inference:
 #+BEGIN_LaTeX
@@ -110,7 +110,7 @@ A related concept is the marginal fuzzy set of $X|V$, denoted as $X$, which is a
 #+END_LaTeX
 Then the basic philosophy to deal with type-2 fuzziness is to use \eqref{marginal_fs} to "cancel out" the secondary fuzziness $V$ and transform the type-2 problems back to the ordinary type-1 framework. We can explicitly model the uncertainty of the membership caused by some parameter $V$ and "cancel" $V$ to get the type-1 marginal fuzzy set. Then the effect of the uncertainty of $V$ is incorporated into type-1 marginal fuzzy set. Refer to the example in \cite{hou_pcm_2016} for the incorporation of uncertainty.
 
-The unified framework (UPCM \cite{hou_pcm_2016}) utilizes the conditional fuzzy set to incorporate fuzziness (uncertainty) of the estimated bandwidth to the fuzziness of the membership function of points. Specifically, the update of the membership function \eqref{pcm_theta_update} is modified as follows:
+The unified framework (UPCM \cite{hou_pcm_2016}) of PCM and APCM utilizes the conditional fuzzy set to incorporate fuzziness (uncertainty) of the estimated bandwidth to the fuzziness of the membership function of points. Specifically, the update of the membership function \eqref{pcm_theta_update} is modified as follows:
 #+BEGIN_LaTeX
 \begin{equation}
 \label{upcm_u_update}
@@ -131,7 +131,7 @@ By setting an appropriate $\alpha$, the influence of points in other clusters $\
 In this section, we first present motivations of proposed noise-level based PCM clustering algorithm (NPCM), which is developed based on UPCM. To address the issue of background noise clusters, we propose to eliminate low-density clusters in the initial partition. Then, we cancel out the parameter $\sigma_v$ in UPCM by utilizing the interplay between $\alpha$ and $\sigma_v$. Finally, we analyze the benefit and the problem after adopting the adaptive $\sigma_v$ approach in NPCM, and summarize the algorithm in Algorithm \ref{alg:npcm}.
 *** Motivations
 1. The performance of clustering algorithm should be robust to background noise. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one large cluster in the final clustering result.
-2. The clustering algorithm should have as less parameters as possible, and the parameters should be intuitive to choose. APCM exerts strong control over the bandwidth correction process, i.e., the estimated bandwidth is directly scaled by the user-specified parameter $\alpha$ which is difficult to choose basing on intuition. In order to handle the uncertainty of the estimated bandwidth in a more fuzzy way, UPCM introduces an uncertainty parameter $\sigma_v$ to regulate the shape of the membership function. However, choosing $\sigma_v$ depends on the noise-level parameter $\alpha$. The experiments in \cite{hou_pcm_2016} suggest that a small $\alpha$ should correspond to a small $\sigma_v$, and a large $\alpha$ to a large $\sigma_v$. So we can exploit this intuition to cancel out the parameter $\sigma_v$.
+2. The clustering algorithm should have as less parameters as possible, and the parameters should be intuitive to choose. APCM exerts strong control over the bandwidth correction process, i.e., the estimated bandwidth is directly scaled by the user-specified parameter $\alpha$ which is difficult to choose basing on intuition. In order to correct the bandwidth in a more fuzzy way, UPCM introduces an uncertainty parameter $\sigma_v$ to regulate the shape of the membership function. However, choosing $\sigma_v$ depends on the noise-level parameter $\alpha$. The experiments in \cite{hou_pcm_2016} suggest that a small $\alpha$ should correspond to a small $\sigma_v$, and a large $\alpha$ to a large $\sigma_v$. So we can exploit this intuition to cancel out the parameter $\sigma_v$.
 *** Initialization in NPCM
 There are two issues with the initialization of NPCM. First, as in APCM and UPCM, NPCM needs an over-specified number of clusters $m_{ini}$ of the true number of clusters $m$. In the initial partition of the dataset, there should be at least one cluster placed near each physical cluster. 
 It's shown in \cite{panda_comparing_2012} that K-Means is faster than FCM. So we choose K-Means to get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points $\mathbf{x}_i$ that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
@@ -152,7 +152,7 @@ where $d$ is the dimension of $\mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cl
 *** Modeling the relation between $\alpha$ and $\sigma_v$
 In UPCM, the noise-level parameter $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. Specifically, $\alpha$ measures the closeness of two cluster prototypes in the clustering result. When a large $\alpha$ is specified, we consider that there may be clusters very close to each other, and the $\eta_j$ estimated in this case may be very uncertain. With the above interpretation of $\alpha$, the interplay between $\alpha$ and $\sigma_v$ becomes simple and intuitive, i.e., a large specification of noise level $\alpha$ means that fewer points (that we consider as good points) are actually contributed to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility to merge; on the other hand, a small specification of $\alpha$ means that we are less uncertain about the estimated bandwidth, and more points are contributed to the adaption of $\boldsymbol{\theta}_j$, so we should also specify a small $\sigma_v$ \cite{hou_pcm_2016}. 
 
-Before proceeding, we review the the role of $\sigma_v$ in the clustering process of UPCM, which offers us insights into fuzzy clustering. UPCM exploits the conditional fuzzy set to incorporate the uncertainty of the estimated bandwidth. As can be seen from \eqref{upcm_u_update}, the actual bandwidth of the membership function $u_{ij}$ varies according to $\sigma_v$ and $d_{ij}$. In other words, the shape of the membership function becomes flatter when $\sigma_v$ or $d_{ij}$ increases. Note that a larger bandwidth corresponds a flatter membership curve. This observation suggests that the bandwidth itself can indicate the uncertainty of the estimated bandwidth, i.e., a large estimated bandwidth should correspond to a large $\sigma_v$. We will see that the formulation of NPCM meets this requirement.
+Before proceeding, we take a look at the the role of $\sigma_v$ in the clustering process of UPCM. UPCM exploits the conditional fuzzy set to incorporate the uncertainty of the estimated bandwidth. As can be seen from \eqref{upcm_u_update}, the actual bandwidth of the membership function $u_{ij}$ varies according to $\sigma_v$ and $d_{ij}$. In other words, the shape of the membership function becomes flatter when $\sigma_v$ or $d_{ij}$ increases. Note that a larger bandwidth corresponds a flatter membership curve. This observation suggests that the bandwidth itself can indicate the uncertainty of the estimated bandwidth, i.e., a large estimated bandwidth should correspond to a large $\sigma_v$. We will see that the formulation of NPCM meets this requirement.
 
 From \eqref{upcm_u_update}, we can calculate the distance $d_{j\alpha}$ beyond which a point can't be used to contribute to the adaption of cluster $C_j$ by letting
 #+BEGIN_LaTeX
@@ -168,7 +168,7 @@ d_{j\alpha}=\sqrt{-\ln\alpha}\left(\eta_j+\sqrt{-\ln\alpha}\sigma_v\right)
 \end{equation}
 #+END_LaTeX
 
-When there is no uncertainty in the estimated bandwidth, we get $d_{j\alpha}^0=\sqrt{-\ln\alpha}\eta_j$. For a fixed $\alpha$, a large $\sigma_v$ will cause $d_{j\alpha}$ to become larger, which reduces the effect of $\alpha$. This observation, together with the intuitive interplay between $\alpha$ and $\sigma_v$ we get from UPCM, suggests that we can explicitly specify a relation between $\alpha$ and $\sigma_v$. More specifically, we define the effect of $\sigma_v$ as the correction of $d_{j\alpha}^0$ by considering the uncertainty of the estimated bandwidth:
+When there is no uncertainty in the estimated bandwidth, we get $d_{j\alpha}^0=\sqrt{-\ln\alpha}\eta_j$. For a fixed $\alpha$, a large $\sigma_v$ will cause $d_{j\alpha}$ to become larger, which reduces the effect of $\alpha$ (see \eqref{upcm_theta_update}). This observation, together with the intuitive interplay between $\alpha$ and $\sigma_v$ we get from UPCM, suggests that we can explicitly specify a relation between $\alpha$ and $\sigma_v$. More specifically, we define the effect of $\sigma_v$ as the correction of $d_{j\alpha}^0$ by considering the uncertainty of the estimated bandwidth:
 #+BEGIN_LaTeX
 \begin{equation}
 \frac{d_{j\alpha}-d_{j\alpha}^0}{d_{j\alpha}^0}=\frac{\sqrt{-\ln\alpha}\sigma_v}{\eta_j}=0.2,
@@ -181,7 +181,7 @@ which leads to
 \sigma_v=0.2\frac{\eta_j}{\sqrt{-\ln\alpha}}
 \end{equation}
 #+END_LaTeX
-Note that we can choose a value that is not 0.2 in the above formulation. From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$. Then update of the membership function is modified as follows:
+Note that we can choose a value that is not 0.2 in the above formulation. From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$. The update of the membership function is modified according to \eqref{upcm_u_update} and \eqref{npcm_sig_alpha_relation} as:
 #+BEGIN_LaTeX
 \begin{equation}
 \label{npcm_u_update}
@@ -190,7 +190,11 @@ Note that we can choose a value that is not 0.2 in the above formulation. From \
 #+END_LaTeX
 where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{ij}\eta_j/\sqrt{-\ln\alpha}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$.
 *** The NPCM algorithm
-The proof of cluster elimination and convergence of the prototypes to the center of dense regions is given in the Appendix. When convergence is reached, there is only one cluster in each physical cluster. However, it is seen from \eqref{npcm_sig_alpha_relation} that for cluster $C_j$, the adaption of $\eta_j$ is a positive feedback process, i.e., a large $\eta_j$ leads to a large $\sigma_v$ which means that there may be more points involved to calculate $\eta_j$ in the next iteration, so $\eta_j$ may become larger. The benefit of this fact is that the generated $\eta_j$ can automatically increase to fit the physical cluster. But there can also be situations where cluster $C_j$ becomes unexpectedly large because boundary points between $C_j$ and other clusters gradually become points of $C_j$ due to the positive feedback process, and as a result, $\eta_k$ of the nearby smaller cluster $C_k$ is under-estimated. Note that UPCM does not have this problem because all clusters in UPCM have the same $\sigma_v$. To solve this problem, we modify the $\eta_j$ update as:
+The update mechanism of $\eta_j$ in APCM and UPCM, that only data points that are most compatible to cluster $C_j$ can be used to update $\eta_j$ (see \eqref{apcm_eta_update}), makes the adaption of $\eta_j$ a positive feedback process. More specifically, if $\eta_j$ is large, then there may be more points to compute $\eta_j$ in the next iteration, which leads $\eta_j$ to become larger.
+The proof of cluster elimination and convergence of the prototypes to the center of dense regions is given in the Appendix. When convergence is reached, there is only one cluster in each physical cluster.
+The benefit of the above positive feedback process is that the generated $\eta_j$ can automatically increase to fit the physical cluster after convergence is reached.
+The difference between NPCM and previous algorithms APCM and UPCM is that the introduction of adaptive $\sigma_v$ based on $\eta_j$ makes the positive feedback process more stronger because a large $\eta_j$ corresponds to a large $\sigma_v$ (see \eqref{npcm_sig_alpha_relation}). A direct consequence of this fact is that NPCM has a faster convergence rate (see Proposition \ref{prop_eliminate} in the Appendix).
+But there can also be situations where cluster $C_j$ becomes unexpectedly large because boundary points between $C_j$ and other clusters gradually become more compatible to $C_j$ due to the positive feedback process, and as a result, $\eta_k$ of the nearby smaller cluster $C_k$ is dramatically under-estimated. Note that UPCM and APCM do not have this problem because all clusters in UPCM have the same $\sigma_v$ (see \eqref{upcm_u_update}) and $\gamma_j\text{x}$ of all clusters in APCM are also confined by the same $\alpha$ parameter (see \eqref{corrected_eta}). To solve this problem, we modify the $\eta_j$ update as:
 #+BEGIN_LaTeX
 \begin{equation}
 \label{npcm_eta_update}
@@ -201,7 +205,7 @@ where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The r
 
 From the previous analysis, the NPCM algorithm can be summarized in Algorithm \ref{alg:npcm}.
 #+BEGIN_LaTeX
-\begin{algorithm}[H]
+\begin{algorithm}
 \caption{ [$\Theta$, $U$, $label$] = NPCM($X$, $m_{ini}$, $\alpha$)}
 \label{alg:npcm}
 \begin{algorithmic}[1]

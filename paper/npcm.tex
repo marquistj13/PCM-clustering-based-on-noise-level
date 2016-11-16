@@ -1,4 +1,4 @@
-% Created 2016-11-07 周一 18:59
+% Created 2016-11-16 周三 22:32
 \documentclass[journal]{IEEEtran}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -24,13 +24,14 @@
 \theorembodyfont{\normalfont}
 \theoremsymbol{\ensuremath{\blacksquare}}
 \newtheorem{definition}{Definition}
+\newtheorem*{proof}{Proof}
+\newtheorem{prop}{Proposition}
 \usepackage[caption=false,font=footnotesize]{subfig}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \newcommand{\crhd}{\raisebox{.25ex}{$\rhd$}}
 \renewcommand{\algorithmiccomment}[1]{{\hspace{-0.6cm}$\crhd$ {\it {#1}}}}
-\newcommand{\vect}[1]{\boldsymbol{#1}}
 \interdisplaylinepenalty=2500
 \date{}
 \title{PCM Clustering based on Noise Level}
@@ -41,22 +42,23 @@
 \begin{document}
 
 \maketitle
-\bibliographystyle{IEEEtran}
-\bibliography{D:/emacs/etc/ZoteroOutput,IEEEabrv}
-
 \begin{abstract}
-Possibilistic c-Means (PCM) based clustering algorithms  are widely used in the literature. The unified framework (UPCM) of  PCM and Adaptive PCM (APCM) controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
+Possibilistic c-Means (PCM) based clustering algorithms  are widely used in the literature. The unified framework (UPCM) of  PCM and adaptive PCM (APCM) controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
 In this paper, we present an extension of UPCM, i.e., noise level based pcm (NPCM), to ease the parameter-choosing issue and also to  improve UPCM.
 NPCM runs with two parameters, $m_{ini}$ is the potentially over-specified initial number of clusters, $\alpha$ is the noise level of the dataset which characterizes minimum closeness of clusters. NPCM then discovers the true number of clusters. $\alpha$ controls the closeness of generated clusters. Another property of NPCM is that the bandwidth (radius) of each cluster can be correctly estimated, furthermore, NPCM automatically calculates the uncertainty of the estimated bandwidth ($\sigma_v$). More specifically, a large bandwidth corresponds to a large bandwidth uncertainty $\sigma_v$. 
 \end{abstract}
-\begin{IEEEkeywords}
-possibilistic  clustering, uncertainty, conditional fuzzy set, type-2 fuzzy set, noise level
-\end{IEEEkeywords}
 \section{Introduction}
 \label{sec-1}
-\section{Background Knowledge and Motivations}
+Our contributions are summarized as follows:
+\begin{enumerate}
+\item We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final
+\end{enumerate}
+
+
+\section{Background Knowledge}
 \label{sec-2}
-\subsection{Background Knowledge}
+In this section, we provide the background knowledge for our work. The PCM and APCM algorithms are first reviewed. Then, we review the UPCM algorithm, which utilizes the conditional fuzzy set framework to control the bandwidth of the membership function of points in a more natural and flexible way than APCM.
+\subsection{The PCM and APCM Clustering Algorithms}
 \label{sec-2-1}
 The objective of Possibilistic c-means (PCM) \cite{krishnapuram_possibilistic_1993} is to minimize the following cost:
 \begin{equation}
@@ -70,27 +72,222 @@ $\mathbf{\Theta}=(\boldsymbol{\theta}_1,\ldots,\boldsymbol{\theta}_c)$ is a $c$-
 
 Compared with Fuzzy c-means (FCM) \cite{bezdek_pattern_2013}, PCM relaxes the constraint that the memberships of a datum to all clusters sum to $1$. So the generated memberships can be indicated as the typicality of a point to the cluster. This modification also leads to higher noise immunity with respect to FCM based algorithms \cite{barni_comments_1996}.
 
-By minimizing $J(\mathbf{\Theta},\mathbf{U})$ with respect to $u_{ij}$ and $\boldsymbol{\theta}_j$, we get the following update equations:
+Minimizing $J(\mathbf{\Theta},\mathbf{U})$ with respect to $u_{ij}$ and $\boldsymbol{\theta}_j$ leads to the the following two update equations:
 \begin{IEEEeqnarray}{ll}
 u_{ij}&=\exp\left(-\frac{d^2_{ij}}{\gamma_j}\right) \label{pcm_u_update}  \\
 \boldsymbol{\theta}_j&=\frac{\Sigma_{i=1}^Nu_{ij}\mathbf{x}_i}{\Sigma_{i=1}^Nu_{ij}} \label{pcm_theta_update}
 \end{IEEEeqnarray}
 
-The major problem of PCM is that its performance relies heavily on good initial partitions and parameters \cite{nasraoui_improved_1996}. More specifically, the $c$ dense regions found may be coincident, as reported in \cite{barni_comments_1996}. Adaptive PCM (APCM) \cite{xenaki_novel_2016} solves this problem by adapting $\gamma_j$ at each iteration, so the clusters with $\gamma_j=0$ are eliminated. To handle the case where two physical clusters with very different variance are located very close to each other, APCM introduces a parameter $\alpha$ to manually scale the bandwidth:
+The major problem of PCM is that its performance relies heavily on good initial partitions and parameters \cite{nasraoui_improved_1996}. More specifically, the $c$ dense regions found may be coincident, as reported in \cite{barni_comments_1996}. Adaptive PCM (APCM) \cite{xenaki_novel_2016} solves this problem by adapting $\gamma_j$ at each iteration, and the clusters with $\gamma_j=0$ are eliminated. To handle the case where two physical clusters with very different variance are located very close to each other, APCM introduces a parameter $\alpha$ to manually scale the bandwidth:
 \begin{equation}
 \label{corrected_eta}
 \gamma_j=\frac{\hat{\eta}}{\alpha}\eta_j
 \end{equation}
-where $\hat{\eta}$ is a constant defined as the minimum among all initial $\eta_j\text{s}$, $\hat{\eta}=\min_j\eta_j$, and $\alpha$ is chosen so that the quantity $\hat{\eta}/\alpha$ equals to the mean absolute deviation ($\eta_j$)  of the smallest physical cluster formed in the dataset. $\eta_j$ is initialized as
-\begin{equation}
-\label{apcm_eta_init}
-\eta_j=\frac{\Sigma_{i=1}^Nu_{ij}^{FCM}d_{ij}}{\Sigma_{i=1}^Nu_{ij}^{FCM}}  
-\end{equation}
-where $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$, $\boldsymbol{\theta}_j\text{s}$ and $u_{ij}^{FCM}\text{s}$ in \eqref{apcm_eta_init} are the final parameter estimates obtained by FCM. $\eta_j$ is updated at each iteration as the \emph{mean absolute deviation} of the most compatible to cluster $C_j$ data points which form a set $A_j$, i.e., $A_j=\{\mathbf{x}_i|u_{ij}=\max_r u_{ir}\}$.
+where $\hat{\eta}$ is a constant defined as the minimum among all initial $\eta_j\text{s}$, $\hat{\eta}=\min_j\eta_j$, and $\alpha$ is chosen so that the quantity $\hat{\eta}/\alpha$ equals to the mean absolute deviation ($\eta_j$)  of the smallest physical cluster formed in the dataset.
+$\eta_j$ is updated at each iteration as the \emph{mean absolute deviation} of the most compatible to cluster $C_j$ data points which form a set $A_j$, i.e., $A_j=\{\mathbf{x}_i|u_{ij}=\max_r u_{ir}\}$.
 \begin{equation}
 \label{apcm_eta_update}
 \eta_j=\frac{1}{n_j}\sum_{\mathbf{x}_i\in A_j}||\mathbf{x}_i-\boldsymbol{\mu}_j||
 \end{equation}
 where $n_j$ and $\boldsymbol{\mu}_j$ are the number of points in $A_j$ and the mean vector of points in $A_j$ respectively.
+\subsection{The Conditional Fuzzy Set and the UPCM Algorithm}
+\label{sec-2-2}
+According to Zadeh \cite{zadeh_concept_1975}, a type-2 fuzzy set (T2 FS) is a fuzzy set whose membership values are type-1 fuzzy sets on $[0,1]$. However, the conventional type-2 fuzzy set definition (e.g., \cite{mendel_type-2_2002}) makes T2 FS a complex subject. To simplify this problem, Li-Xin Wang \cite{wang_new_2016} proposes a conditional fuzzy set framework: a \emph{conditional fuzzy set}, denoted as $X|V$, is a fuzzy set with membership function $\mu_{X|V}(x|V)$ depending on the fuzzy set $V$ whose membership function is $\mu_V(v)$. The membership function $\mu_{X|V}(x|V)$ characterizes the \emph{primary fuzziness} while $\mu_V(v)$ characterizes the \emph{secondary fuzziness}. This framework provides a much more natural framework to model the dependence of one fuzziness (uncertainty) on another fuzziness than the type-2 fuzzy set formulation \cite{wang_new_2016}.
+
+A related concept is the marginal fuzzy set of $X|V$, denoted as $X$, which is a type-1 fuzzy set whose membership function $\mu_X(x)$ is determined through Zadeh's Compositional Rule of Inference:
+\begin{equation}
+\label{marginal_fs}
+\mu_X(x)=\max_{v\in\Omega_V}\min[\mu_{X|V}(x|v),\mu_V(v)],\;\;x\in\Omega_X.
+\end{equation}
+\end{definition}
+Then the basic philosophy to deal with type-2 fuzziness is to use \eqref{marginal_fs} to "cancel out" the secondary fuzziness $V$ and transform the type-2 problems back to the ordinary type-1 framework. We can explicitly model the uncertainty of the membership caused by some parameter $V$ and "cancel" $V$ to get the type-1 marginal fuzzy set. Then the effect of the uncertainty of $V$ is incorporated into type-1 marginal fuzzy set. Refer to the example in \cite{hou_pcm_2016} for the incorporation of uncertainty.
+
+The unified framework (UPCM \cite{hou_pcm_2016}) of PCM and APCM utilizes the conditional fuzzy set to incorporate fuzziness (uncertainty) of the estimated bandwidth to the fuzziness of the membership function of points. Specifically, the update of the membership function \eqref{pcm_theta_update} is modified as follows:
+\begin{equation}
+\label{upcm_u_update}
+\mu_{ij}=\exp\left(-\frac{d_{ij}^2}{\gamma_j}\right)
+\end{equation}
+where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+4\sigma_vd_{ij}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$.
+The bandwidth correction of \eqref{upcm_u_update} is more natural and flexible than that of that of \eqref{corrected_eta}.
+Another feature of UPCM is that UPCM introduces the concept of \emph{noise level} $\alpha$ of the data set in the update equation of prototypes:
+\begin{equation}
+\label{upcm_theta_update}
+\boldsymbol{\theta}_j=\frac{\Sigma_{i=1}^Nu_{ij}\mathbf{x}_i}{\Sigma_{i=1}^Nu_{ij}} \quad \text{for}\;u_{ij}\geq \alpha.
+\end{equation}
+By setting an appropriate $\alpha$, the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update is reduced. This feature allows us to control the closeness of clusters in the clustering result.
+\section{Our Algorithm}
+\label{sec-3}
+In this section, we first present motivations of proposed noise-level based PCM clustering algorithm (NPCM), which is developed based on UPCM. To address the issue of background noise clusters, we propose to eliminate low-density clusters in the initial partition. Then, we cancel out the parameter $\sigma_v$ in UPCM by utilizing the interplay between $\alpha$ and $\sigma_v$. Finally, we analyze the benefit and the problem after adopting the adaptive $\sigma_v$ approach in NPCM, and summarize the algorithm in Algorithm \ref{alg:npcm}.
+\subsection{Motivations}
+\label{sec-3-1}
+\begin{enumerate}
+\item The performance of clustering algorithm should be robust to background noise. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one large cluster in the final clustering result.
+\item The clustering algorithm should have as less parameters as possible, and the parameters should be intuitive to choose. APCM exerts strong control over the bandwidth correction process, i.e., the estimated bandwidth is directly scaled by the user-specified parameter $\alpha$ which is difficult to choose basing on intuition. In order to correct the bandwidth in a more fuzzy way, UPCM introduces an uncertainty parameter $\sigma_v$ to regulate the shape of the membership function. However, choosing $\sigma_v$ depends on the noise-level parameter $\alpha$. The experiments in \cite{hou_pcm_2016} suggest that a small $\alpha$ should correspond to a small $\sigma_v$, and a large $\alpha$ to a large $\sigma_v$. So we can exploit this intuition to cancel out the parameter $\sigma_v$.
+\end{enumerate}
+\subsection{Initialization in NPCM}
+\label{sec-3-2}
+There are two issues with the initialization of NPCM. First, as in APCM and UPCM, NPCM needs an over-specified number of clusters $m_{ini}$ of the true number of clusters $m$. In the initial partition of the dataset, there should be at least one cluster placed near each physical cluster. 
+It's shown in \cite{panda_comparing_2012} that K-Means is faster than FCM. So we choose K-Means to get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points $\mathbf{x}_i$ that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
+\begin{IEEEeqnarray}{ll}
+\boldsymbol{\theta}_j &= \frac{\Sigma_{i}\mathbf{x}_i}{n_j}  \quad \text{for}\;\mathbf{x}_i \in A_j^{ini} \label{npcm_ini_theta}\\
+\eta_j &= \frac{1}{n_j}\sum_{\mathbf{x}_i \in A_j^{ini}}||\mathbf{x}_i-\boldsymbol{\theta}_j|| \label{npcm_ini_eta}
+\end{IEEEeqnarray}
+Second, as stated in the motivations, the background noise clusters in the initial partition should be eliminated. To address this issue, we define the density of a cluster as:
+\begin{equation}
+\label{npcm_density}
+\rho_j=\frac{n_j}{\eta_j^d}
+\end{equation}
+where $d$ is the dimension of $\mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cluster $C_j$ is a noise cluster and is eliminated if $\rho_j<0.1\rho_0$.
+\subsection{Modeling the relation between $\alpha$ and $\sigma_v$}
+\label{sec-3-3}
+In UPCM, the noise-level parameter $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. Specifically, $\alpha$ measures the closeness of two cluster prototypes in the clustering result. When a large $\alpha$ is specified, we consider that there may be clusters very close to each other, and the $\eta_j$ estimated in this case may be very uncertain. With the above interpretation of $\alpha$, the interplay between $\alpha$ and $\sigma_v$ becomes simple and intuitive, i.e., a large specification of noise level $\alpha$ means that fewer points (that we consider as good points) are actually contributed to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility to merge; on the other hand, a small specification of $\alpha$ means that we are less uncertain about the estimated bandwidth, and more points are contributed to the adaption of $\boldsymbol{\theta}_j$, so we should also specify a small $\sigma_v$ \cite{hou_pcm_2016}. 
+
+Before proceeding, we take a look at the the role of $\sigma_v$ in the clustering process of UPCM. UPCM exploits the conditional fuzzy set to incorporate the uncertainty of the estimated bandwidth. As can be seen from \eqref{upcm_u_update}, the actual bandwidth of the membership function $u_{ij}$ varies according to $\sigma_v$ and $d_{ij}$. In other words, the shape of the membership function becomes flatter when $\sigma_v$ or $d_{ij}$ increases. Note that a larger bandwidth corresponds a flatter membership curve. This observation suggests that the bandwidth itself can indicate the uncertainty of the estimated bandwidth, i.e., a large estimated bandwidth should correspond to a large $\sigma_v$. We will see that the formulation of NPCM meets this requirement.
+
+From \eqref{upcm_u_update}, we can calculate the distance $d_{j\alpha}$ beyond which a point can't be used to contribute to the adaption of cluster $C_j$ by letting
+\begin{equation}
+\exp\left(-\frac{(d_{j\alpha})^2}{\gamma_j}\right)=\alpha,
+\end{equation}
+which leads to
+\begin{equation}
+\label{npcm_d_alpha}
+d_{j\alpha}=\sqrt{-\ln\alpha}\left(\eta_j+\sqrt{-\ln\alpha}\sigma_v\right)
+\end{equation}
+
+When there is no uncertainty in the estimated bandwidth, we get $d_{j\alpha}^0=\sqrt{-\ln\alpha}\eta_j$. For a fixed $\alpha$, a large $\sigma_v$ will cause $d_{j\alpha}$ to become larger, which reduces the effect of $\alpha$ (see \eqref{upcm_theta_update}). This observation, together with the intuitive interplay between $\alpha$ and $\sigma_v$ we get from UPCM, suggests that we can explicitly specify a relation between $\alpha$ and $\sigma_v$. More specifically, we define the effect of $\sigma_v$ as the correction of $d_{j\alpha}^0$ by considering the uncertainty of the estimated bandwidth:
+\begin{equation}
+\frac{d_{j\alpha}-d_{j\alpha}^0}{d_{j\alpha}^0}=\frac{\sqrt{-\ln\alpha}\sigma_v}{\eta_j}=0.2,
+\end{equation}
+which leads to 
+\begin{equation}
+\label{npcm_sig_alpha_relation}
+\sigma_v=0.2\frac{\eta_j}{\sqrt{-\ln\alpha}}
+\end{equation}
+Note that we can choose a value that is not 0.2 in the above formulation. From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$. The update of the membership function is modified according to \eqref{upcm_u_update} and \eqref{npcm_sig_alpha_relation} as:
+\begin{equation}
+\label{npcm_u_update}
+\mu_{ij}=\exp\left(-\frac{d_{ij}^2}{\gamma_j}\right)
+\end{equation}
+where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{ij}\eta_j/\sqrt{-\ln\alpha}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$.
+\subsection{The NPCM algorithm}
+\label{sec-3-4}
+The update mechanism of $\eta_j$ in APCM and UPCM, that only data points that are most compatible to cluster $C_j$ can be used to update $\eta_j$ (see \eqref{apcm_eta_update}), makes the adaption of $\eta_j$ a positive feedback process. More specifically, if $\eta_j$ is large, then there may be more points to compute $\eta_j$ in the next iteration, which leads $\eta_j$ to become larger.
+The proof of cluster elimination and convergence of the prototypes to the center of dense regions is given in the Appendix. When convergence is reached, there is only one cluster in each physical cluster.
+The benefit of the above positive feedback process is that the generated $\eta_j$ can automatically increase to fit the physical cluster after convergence is reached.
+The difference between NPCM and previous algorithms APCM and UPCM is that the introduction of adaptive $\sigma_v$ based on $\eta_j$ makes the positive feedback process more stronger because a large $\eta_j$ corresponds to a large $\sigma_v$ (see \eqref{npcm_sig_alpha_relation}). A direct consequence of this fact is that NPCM has a faster convergence rate (see Proposition \ref{prop_eliminate} in the Appendix).
+But there can also be situations where cluster $C_j$ becomes unexpectedly large because boundary points between $C_j$ and other clusters gradually become more compatible to $C_j$ due to the positive feedback process, and as a result, $\eta_k$ of the nearby smaller cluster $C_k$ is dramatically under-estimated. Note that UPCM and APCM do not have this problem because all clusters in UPCM have the same $\sigma_v$ (see \eqref{upcm_u_update}) and $\gamma_j\text{x}$ of all clusters in APCM are also confined by the same $\alpha$ parameter (see \eqref{corrected_eta}). To solve this problem, we modify the $\eta_j$ update as:
+\begin{equation}
+\label{npcm_eta_update}
+\eta_j=\frac{1}{n_j}\sum_{\mathbf{x}_i\in A_j}||\mathbf{x}_i-\boldsymbol{\theta}_j|| \quad \text{for}\;u_{ij} \geq 0.01.
+\end{equation}
+where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The rationale is that, the update process of $\eta_j$ should not be too sensitive to the point $\mathbf{x}_i$ near the boundary of clusters, and by so doing, the iteration times may also be reduced.
+
+From the previous analysis, the NPCM algorithm can be summarized in Algorithm \ref{alg:npcm}.
+\begin{algorithm}
+\caption{ [$\Theta$, $U$, $label$] = NPCM($X$, $m_{ini}$, $\alpha$)}
+\label{alg:npcm}
+\begin{algorithmic}[1]
+\Require {$X$, $m_{ini}$, $\alpha$}
+\State $m=m_{ini}$
+\State \textbf{Set:} $\alpha=10^{-5}$ if $\alpha==0$
+\State \textbf{Set:} $\alpha=1-10^{-5}$ if $\alpha==1$
+\Statex {\Comment {Initialization and possible noise cluster elimination}}
+\State Run K-Means.
+\State Initialize $\theta_j$ and $\eta_j$ via \eqref{npcm_ini_theta} and \eqref{npcm_ini_eta}
+\State Caculate $\rho_j$ via \eqref{npcm_density}
+\State \textbf{Set:} $\rho_0=\max_j\rho_j$
+\State Cluster $j$ is eliminated if $\rho_j<0.1\rho_0$
+\State \textbf{Set:} $m=m-p$ if $p$ clusters are eliminated
+\Repeat
+\State Update $U$ via \eqref{npcm_u_update}
+\State Update $\Theta$ via \eqref{upcm_theta_update}
+\Statex {\Comment {Possible cluster elimination}}
+\For{$i \leftarrow 1 \textbf{ to } N$}
+\State \textbf{Set:} $label(i)=r$ if $u_{ir}=\max_j u_{ij}$
+\EndFor
+\State Cluster $j$ is eliminated if $j \notin label$
+\State \textbf{Set:} $m=m-p$ if  $p$ clusters are eliminated
+\Statex {\Comment {Bandwidth update and possible cluster elimination}}
+\State Update $\eta_j$ via \eqref{npcm_eta_update}
+\State Cluster $j$ is eliminated if $\eta_j=0$ (This happens if there is only one point in Cluster $j$)
+\State \textbf{Set:} $m=m-p$ if  $p$ clusters are eliminated
+\Until{the change in $\theta_j$'s between two successive iterations becomes sufficiently small}\\
+\Return {$\Theta$, $U$, $label$}
+\end{algorithmic}
+\end{algorithm}
+\subsection{ApTEMPT}
+\label{sec-3-5}
+\appendix
+In this appendix, we prove the cluster elimination and the convergence of the prototypes to the center of dense regions. Because some convergence results of APCM \cite{xenaki_novel_2016} are applicable to NPCM, we only give the essential part of the proof. 
+
+We consider the continuous case where data points are modeled by a random variable $\mathbf{x}$ that follows a continuous pdf distribution $p(\mathbf{x})$. In this case, the update equations are given below:
+\begin{equation}
+\boldsymbol{\theta}_j^{t+1}=\frac{\int_{R_j^t} u_{j}^t(\mathbf{x})\mathbf{x}p(\mathbf{x})d\mathbf{x}}{\int_{R_j^t} u_{j}^t(\mathbf{x})p(\mathbf{x})d\mathbf{x}} 
+\end{equation}
+where $R_j^t=\{\mathbf{x}|u_{j}^t(\mathbf{x}) \geq \alpha\}$,
+\begin{IEEEeqnarray}{ll}
+u_{j}^t(\mathbf{x}) &= \exp\left(\frac{||\mathbf{x}-\boldsymbol{\theta}_j^t||^2}{\gamma_j^t}\right) \\
+\gamma_j^t &= \left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{j}\eta_j/\sqrt{-\ln\alpha}}\right)^2
+\end{IEEEeqnarray}
+and 
+\begin{equation}
+\eta_{j} = \frac{\int_{T_j^{t}} ||\mathbf{x}-\boldsymbol{\theta}_j^{t}||p(\mathbf{x})d\mathbf{x}}{\int_{T_j^{t}} p(\mathbf{x})d\mathbf{x}}
+\end{equation}
+with $T_j^{t}=\{\mathbf{x}|u_{j}^{t}(\mathbf{x})=\max_r u_{r}^{t}(\mathbf{x}), u_{j}^t(\mathbf{x}) \geq 0.01\}$.
+
+The above equations define the iterative scheme $\boldsymbol{\theta}_j^{t+1}=f(\boldsymbol{\theta}_j^{t})$, where
+\begin{equation}
+\label{npcm_iteration_scheme}
+f(\boldsymbol{\theta}_j^t)=\frac{\int_{R_j^t} \exp\left(-\frac{\|\mathbf{x}-\boldsymbol{\theta}_j^t\|^2}{\gamma_j^t}\right)\mathbf{x}p(\mathbf{x})d\mathbf{x}}{\int_{R_j^t} \exp\left(-\frac{\|\mathbf{x}-\boldsymbol{\theta}_j^t\|^2}{\gamma_j^t}\right)p(\mathbf{x})d\mathbf{x}} 
+\end{equation}
+
+
+\begin{prop}
+Assume that $p(\mathbf{x})$ is a zero mean normal distribution ${\cal N}(\mathbf{0},\sigma^2I)$. Then the center $\mathbf{c}=\mathbf{0}$ of $p(\mathbf{x})$ is a fixed point for the iterative scheme defined by \eqref{npcm_iteration_scheme}. Furthermore, the fixed point $\mathbf{0}$ of the scheme $\boldsymbol{\theta}^{t+1}=f(\boldsymbol{\theta}^{t})$ is stable.
+\label{prop_fix_stable}
+\end{prop}
+
+\begin{proof}
+See the proof of Proposition 3 and Proposition 4 in \cite{xenaki_novel_2016}.
+\end{proof}
+
+In the general case where data form more than one dense regions, Proposition \ref{prop_fix_stable} is still valid, assuming that a proper $\alpha$ is specified so that the influence on a prototype that belongs to a given dense region from points from other dense regions is negligible.
+
+\begin{prop}
+Let $\boldsymbol{\theta}_1$, $\boldsymbol{\theta}_2$ be two cluster prototypes with $\eta_1>\eta_2$ in the same dense region. Then cluster $C_2$ represented by $\boldsymbol{\theta}_2$ will be eliminated.
+\label{prop_eliminate}
+\end{prop}
+
+\begin{proof}
+ We first calculate the geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{d_j^2(\mathbf{x})}{\gamma_j}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|^2$, $j=1,2$.
+From \eqref{npcm_d_alpha} and \eqref{npcm_sig_alpha_relation}, we get $d_{u_1}=\sqrt{-\ln u_1}\left(\eta_1+\sqrt{-\ln u_1}\sigma_{v_1}\right)=1.2\sqrt{-\ln u_1}\eta_1$ and $d_{u_2}=1.2\sqrt{-\ln u_2}\eta_2$, where we use $u_1$ and $u_2$ to represent $u_1(\mathbf{x})$ and $u_2(\mathbf{x})$ respectively. 
+
+For the points $\mathbf{x}$ that meet $u_1<u_2$, we have 
+\begin{equation*}
+\frac{d_{u_1}}{d_{u_2}}=\frac{1.2\sqrt{-\ln u_1}\eta_1}{1.2\sqrt{-\ln u_2}\eta_2}>\frac{\eta_1}{\eta_2}(1+\epsilon)=k'>\frac{\eta_1}{\eta_2}=k>1
+\end{equation*}
+where $\epsilon\in(0,+\infty)$. Then we get $\|\mathbf{x} - \boldsymbol{\theta}_1\|^2 > k'\|\mathbf{x} - \boldsymbol{\theta}_2\|^2$, and we have after some algebra
+\begin{equation}
+\label{hypersphere}
+\|\mathbf{x}-\frac{k'\boldsymbol{\theta}_2-\boldsymbol{\theta}_1}{k'-1}\|^2 = \frac{k'}{(k'-1)^2}\|\boldsymbol{\theta}_2-\boldsymbol{\theta}_1\|^2\equiv r^2
+\end{equation}
+
+Utilizing Proposition \ref{prop_fix_stable}, we have that $\boldsymbol{\theta}_1$ and $\boldsymbol{\theta}_2$ converge towards $\mathbf{c}$. Thus, the distance between them decreases towards zero, i.e., 
+\begin{equation}
+\|\boldsymbol{\theta}_1(t)-\boldsymbol{\theta}_2(t)\|\rightarrow 0
+\label{eqprop51}
+\end{equation}          
+
+So the radius $r$ in \eqref{hypersphere} tends to zero as $t$ increases, which means that there will be no points in Cluster $C_2$ and $C_2$ will be eliminated.
+
+Note that $k'$ is larger than the $k$ used in the proof of APCM, so convergence of NPCM is faster than APCM. 
+See the proof of Proposition 2 and Proposition 5 in \cite{xenaki_novel_2016} for details.
+\end{proof}
+
+
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{D:/emacs/etc/ZoteroOutput,IEEEabrv}
 % Emacs 24.5.1 (Org mode 8.2.10)
 \end{document}
