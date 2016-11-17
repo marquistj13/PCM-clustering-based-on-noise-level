@@ -92,13 +92,7 @@ $\eta_j$ is updated at each iteration as the /mean absolute deviation/ of the mo
 #+END_LaTeX 
 where $n_j$ and $\boldsymbol{\mu}_j$ are the number of points in $A_j$ and the mean vector of points in $A_j$ respectively.
 *** The Conditional Fuzzy Set and the UPCM Algorithm
-According to Zadeh \cite{zadeh_concept_1975}, a type-2 fuzzy set (T2 FS) is a fuzzy set whose membership values are type-1 fuzzy sets on $[0,1]$. However, the conventional type-2 fuzzy set definition (e.g., \cite{mendel_type-2_2002}) makes T2 FS a complex subject. To simplify this problem, Li-Xin Wang \cite{wang_new_2016} proposes a conditional fuzzy set framework: a \emph{conditional fuzzy set}, denoted as $X|V$, is a fuzzy set with membership function:
-#+BEGIN_LaTeX
-\begin{equation}
-\mu_{X|V}(x|V)
-\end{equation}
-#+END_LaTeX
-depending on the fuzzy set $V$ whose membership function is $\mu_V(v)$. The membership function $\mu_{X|V}(x|V)$ characterizes the \emph{primary fuzziness} while $\mu_V(v)$ characterizes the \emph{secondary fuzziness}. This framework provides a much more natural framework to model the dependence of one fuzziness (uncertainty) on another fuzziness than the type-2 fuzzy set formulation \cite{wang_new_2016}.
+According to Zadeh \cite{zadeh_concept_1975}, a type-2 fuzzy set (T2 FS) is a fuzzy set whose membership values are type-1 fuzzy sets on $[0,1]$. However, the conventional type-2 fuzzy set definition (e.g., \cite{mendel_type-2_2002}) makes T2 FS a complex subject. To simplify this problem, Li-Xin Wang \cite{wang_new_2016} proposes a conditional fuzzy set framework: a \emph{conditional fuzzy set}, denoted as $X|V$, is a fuzzy set with membership function $\mu_{X|V}(x|V)$ depending on the fuzzy set $V$ whose membership function is $\mu_V(v)$. The membership function $\mu_{X|V}(x|V)$ characterizes the \emph{primary fuzziness} while $\mu_V(v)$ characterizes the \emph{secondary fuzziness}. This framework provides a much more natural framework to model the dependence of one fuzziness (uncertainty) on another fuzziness than the type-2 fuzzy set formulation \cite{wang_new_2016}.
 
 A related concept is the marginal fuzzy set of $X|V$, denoted as $X$, which is a type-1 fuzzy set whose membership function $\mu_X(x)$ is determined through Zadeh's Compositional Rule of Inference:
 #+BEGIN_LaTeX
@@ -292,7 +286,7 @@ Let $\boldsymbol{\theta}_1$, $\boldsymbol{\theta}_2$ be two cluster prototypes w
 \end{prop}
 
 \begin{proof}
- We first calculate the geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{d_j^2(\mathbf{x})}{\gamma_j}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|2$, $j=1,2$.
+ We first calculate the geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{d_j^2(\mathbf{x})}{\gamma_j}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|^2$, $j=1,2$.
 From \eqref{npcm_d_alpha} and \eqref{npcm_sig_alpha_relation}, we get $d_{u_1}=\sqrt{-\ln u_1}\left(\eta_1+\sqrt{-\ln u_1}\sigma_{v_1}\right)=1.2\sqrt{-\ln u_1}\eta_1$ and $d_{u_2}=1.2\sqrt{-\ln u_2}\eta_2$, where we use $u_1$ and $u_2$ to represent $u_1(\mathbf{x})$ and $u_2(\mathbf{x})$ respectively. 
 
 For the points $\mathbf{x}$ that meet $u_1<u_2$, we have 
