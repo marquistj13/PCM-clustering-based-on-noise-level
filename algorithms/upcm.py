@@ -17,7 +17,7 @@ v_exp_marginal = np.vectorize(exp_marginal)
 
 
 class upcm():
-    def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=0.005, maxiter=10000, ini_save_name="",
+    def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=10000, ini_save_name="",
                  last_frame_name=""):
         """
         :param X: scikit-learn form, i.e., pf shape (n_samples, n_features)
@@ -88,19 +88,21 @@ class upcm():
         # I'm confused that the returned cntr is already (n_samples, n_features) and doesn't need the transpose
         # plot the fcm initialization
         labels = np.argmax(u_orig, axis=1)
+        # initialize theta, i.e., the centers
+        self.theta = cntr
 
         # plot the fcm initialization result
-        fig, ax = plt.subplots(figsize=(8, 6), dpi=300)  # assume 2-d data
+        fig, ax = plt.subplots(figsize=(7, 3.5), dpi=300)  # assume 2-d data
         for label in range(self.m):
             ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
                     color=colors[label])
+            ax.text(self.theta[label][0], self.theta[label][1], "%d" % label, size='xx-large')
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
         ax.grid(True)
-        ax.set_title('FCM initialization:%2d clusters' % self.m)
+        # ax.set_title('FCM initialization:%2d clusters' % self.m)
         plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
-        # initialize theta, i.e., the centers
-        self.theta = cntr
+
         # now compute ita
         ita = np.zeros(self.m)
         for cntr_index in range(self.m):
@@ -167,17 +169,18 @@ class upcm():
         pass
 
     def save_last_frame(self, p):
-        fig = plt.figure("last frame", dpi=300)
+        fig = plt.figure("last frame", dpi=300, figsize=(7, 3.5))
         ax = fig.gca()
         ax.grid(True)
         # the limit of axixes
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
-        tmp_text = "Iteration times:%2d\n" % p
-        tmp_text += r"$\alpha={:.2f},\sigma_v={:.2f}$".format(self.alpha_cut, self.sig_v0) + "\n"
-        tmp_text += "Initial    number:%2d\nCurrent number:%2d" % (self.m_ori, self.m)
-        ax.text(0.02, 0.84, tmp_text, transform=ax.transAxes)
-        ax.set_title("Clustering Finished")
+        # tmp_text = "Iteration times:%2d\n" % p
+        # tmp_text += r"$\alpha={:.2f},\sigma_v={:.2f}$".format(self.alpha_cut, self.sig_v0) + "\n"
+        # tmp_text += "Initial    number:%2d\nCurrent number:%2d" % (self.m_ori, self.m)
+        tmp_text = "Initial    number:%2d\nCurrent number:%2d" % (self.m_ori, self.m)
+        ax.text(0.02, 0.86, tmp_text, transform=ax.transAxes)
+        # ax.set_title("Clustering Finished")
         labels = np.argmax(self.u, axis=1)
         for label in range(self.m):
             ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.', color=colors[label])
@@ -185,7 +188,7 @@ class upcm():
             ax.add_patch(plt.Circle((self.theta[label][0], self.theta[label][1]),
                                     radius=self.ita[label], color='k', fill=None, lw=2))
         plt.figure("last frame")
-        plt.savefig(self.last_frame_name, dpi=300)
+        plt.savefig(self.last_frame_name, dpi=300, bbox_inches='tight')
         pass
 
     def fit(self):
@@ -221,7 +224,7 @@ class upcm():
         :param p:
         :return:
         """
-        print "in call:",p
+        print "in call:", p
         tmp_text = "Iteration times:%2d\n" % p
         tmp_text += r"$\alpha={:.2f},\sigma_v={:.2f}$".format(self.alpha_cut, self.sig_v0) + "\n"
         labels = np.argmax(self.u, axis=1)
