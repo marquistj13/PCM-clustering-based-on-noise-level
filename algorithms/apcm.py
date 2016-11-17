@@ -9,7 +9,7 @@ plt.style.use('ggplot')
 
 
 class apcm():
-    def __init__(self, X, m, alpha,ax, x_lim, y_lim, error=0.005, maxiter=10000):
+    def __init__(self, X, m, alpha,ax, x_lim, y_lim, error=1e-5, maxiter=10000):
         """
         :param X: scikit-learn form, i.e., pf shape (n_samples, n_features)
         :param m: NO.of initial clusters
