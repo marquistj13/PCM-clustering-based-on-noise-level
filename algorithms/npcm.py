@@ -20,7 +20,7 @@ v_exp_marginal = np.vectorize(exp_marginal)
 
 class npcm():
     def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=10000, ini_save_name="",
-                 last_frame_name=""):
+                 last_frame_name="", save_figsize=(8, 6)):
         """
         :param X: scikit-learn form, i.e., pf shape (n_samples, n_features)
         :param m: NO.of initial clusters
@@ -35,6 +35,7 @@ class npcm():
         self.x_lim = x_lim  # tuple
         self.y_lim = y_lim
         self.alpha_cut = alpha_cut
+        self.save_figsize = save_figsize
         # alpha_cut can't be exactly 0, because we will use it to caculate sig_vj via 0.2* ita/ sqrt(log(alpha_cut))
         if abs(self.alpha_cut) < 1e-5:
             self.alpha_cut += 1e-5
@@ -109,7 +110,7 @@ class npcm():
         self.ita = ita
 
         # plot the fcm initialization result
-        fig = plt.figure("KMeans_init", dpi=90, figsize=(8, 6))
+        fig = plt.figure("KMeans_init", dpi=90, figsize=self.save_figsize)
         ax = fig.gca()
         for label in range(self.m):
             ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
@@ -120,7 +121,7 @@ class npcm():
         ax.grid(True)
         ax.set_title('KMeans initialization:%2d clusters' % self.m)
         plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
-        # plt.close("KMeans_init")
+        plt.close("KMeans_init")
 
         # eliminate noise clusters
         density_list = []  # store density each cluster
@@ -243,7 +244,7 @@ class npcm():
         pass
 
     def save_last_frame(self, p):
-        fig = plt.figure("last frame", dpi=300)
+        fig = plt.figure("last frame", dpi=300, figsize= self.save_figsize)
         ax = fig.gca()
         ax.grid(True)
         # the limit of axixes
@@ -261,7 +262,7 @@ class npcm():
             ax.add_patch(plt.Circle((self.theta[label][0], self.theta[label][1]),
                                     radius=self.ita[label], color='k', fill=None, lw=2))
         plt.figure("last frame")
-        plt.savefig(self.last_frame_name, dpi=300)
+        plt.savefig(self.last_frame_name, dpi=300, bbox_inches='tight')
         plt.close("last frame")
         pass
 
