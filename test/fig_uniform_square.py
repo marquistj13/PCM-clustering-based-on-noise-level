@@ -66,7 +66,7 @@ if __name__ == '__main__':
     last_frame_name = r'.\video\fig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f_last_frame.png' % (
         n_cluster, sigma_v, alpha_cut)
     tmp_video_name = r'.\video\fig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f_tmp.mp4' % (n_cluster, sigma_v, alpha_cut)
-    video_save_newFps_name = r'.\videofig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
+    video_save_newFps_name = r'.\video\fig_uniform_square_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (n_cluster, sigma_v, alpha_cut)
     clf = npcm(X, n_cluster, sigma_v, ax=ax, x_lim=(-1, 10), y_lim=(-1, 10), alpha_cut=alpha_cut,
                ini_save_name=ini_save_name, last_frame_name=last_frame_name)
     # we should set "blit=False,repeat=False" or the program would fail. "init_func=clf.init_animation" plot the
