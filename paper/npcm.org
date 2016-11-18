@@ -35,7 +35,7 @@
 # In IEEEtran_HOWTO the equations section on page 8. this 2500 config is to estore IEEEtran ability to automatically break within multiline equations
 #+LATEX_HEADER: \interdisplaylinepenalty=2500
 
-#+TITLE: PCM Clustering based on Noise Level
+#+TITLE: NPCM: PCM Clustering based on Noise Level
 #+BEGIN_LaTeX
 \begin{abstract}
 Possibilistic c-Means (PCM) based clustering algorithms  are widely used in the literature. The unified framework (UPCM) of  PCM and adaptive PCM (APCM) controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
@@ -211,10 +211,10 @@ The difference between NPCM and the previous algorithms (i.e., APCM and UPCM) is
 \footnote{For the same $\eta_j$, a larger $\sigma_v$ means that the point $\mathbf{x}_i$ with distance $d_{ij}$ to cluster $C_j$ now has a larger $u_{ij}$, which can be seen from \eqref{upcm_u_update}. As a result, $\mathbf{x}_i$ with large $d_{ij}$ can be more compatible to cluster $C_j$ in the next iteration, so the adjustment of $\eta_j$ between successive iterations becomes larger. In this sense, we say that the positive feedback process is stronger.} 
 #+END_LaTeX
 because $\sigma_v$ increases with $\eta_j$ (see \eqref{npcm_sig_alpha_relation}). A direct consequence of this fact is that NPCM has a faster convergence rate (see Proposition \ref{prop_eliminate} in the Appendix).
-However, after convergence is reached, the adaption of each $\eta_j$ should be further controlled to ensure that the above positive feedback process can stop at the right time.
-More specifically, there can be situations where cluster $C_j$ becomes unexpectedly large because boundary points between $C_j$ and other clusters gradually become more compatible to $C_j$ due to the positive feedback process, and as a result, $\eta_k$ of the nearby smaller cluster $C_k$ is dramatically under-estimated. See Fig. for illustration of this problem.
+However, this benefit comes at a price: the adaption of each $\eta_j$ should be further controlled to ensure that $\eta_j$ can be correctly estimated to represent the physical cluster and the above positive feedback process can stop at the right time. Otherwise, the underlying structures wouldn't be correctly discovered.
+More specifically, there can be situations where cluster $C_j$ becomes unexpectedly large for two reasons. First, points of background noise clusters are allowed to contribute to the adaption of $\eta_j$. Second, boundary points between $C_j$ and other clusters gradually become more compatible to $C_j$ due to the positive feedback process. As a result, $\eta_k$ of the nearby smaller cluster $C_k$ is dramatically under-estimated. See Fig.\ref{fig_eta} for illustration of this problem.
 #+BEGIN_LaTeX
-\footnote{UPCM and APCM do not have this problem because all clusters in UPCM have the same $\sigma_v$ (see \eqref{upcm_u_update}) and $\gamma_j\text{s}$ of all clusters in APCM are also confined by the same $\alpha$ parameter (see \eqref{corrected_eta}). So, when convergence is reached, the adjustment of $\eta_j$ between successive iterations is not as large as in NPCM, and the compatibility of boundary points to the clusters do not change very much.} 
+\footnote{UPCM and APCM do not have this problem when their parameters are properly chosen because all clusters in UPCM have the same $\sigma_v$ (see \eqref{upcm_u_update}) to ensure that the small cluster can have enough bandwidth to represent the physical cluster and $\gamma_j\text{s}$ of all clusters in APCM are also confined by the same $\alpha$ parameter (see \eqref{corrected_eta}). So, the adjustment of $\eta_j$ between successive iterations is not as large as in NPCM, and the compatibility of boundary points to the clusters do not change very much.} 
 #+END_LaTeX
 To solve this problem, we modify the $\eta_j$ update as:
 #+BEGIN_LaTeX
@@ -223,7 +223,21 @@ To solve this problem, we modify the $\eta_j$ update as:
 \eta_j=\frac{1}{n_j}\sum_{\mathbf{x}_i\in A_j}||\mathbf{x}_i-\boldsymbol{\theta}_j|| \quad \text{for}\;u_{ij} \geq 0.01.
 \end{equation}
 #+END_LaTeX
-where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The rationale is that, the update process of $\eta_j$ should not be too sensitive to the point $\mathbf{x}_i$ near the boundary of clusters, and by so doing, the iteration times may also be reduced.
+where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The rationale is that, the update process of $\eta_j$ should not be too sensitive to the point $\mathbf{x}_i$ near the boundary of clusters or to noisy points, and by so doing, the iteration times may also be reduced.
+
+#+BEGIN_LaTeX
+\begin{figure}[tb]
+\captionsetup[subfloat]{farskip=1pt,captionskip=1pt}% use this to reduce space between rows of subfloats, or between subfloat and the caption
+   \centering
+   \subfloat[]
+    {\includegraphics[width=\columnwidth]{img/adaptive_eta_without_threshold_ini.png}\label{fig_sub_eta_ini}} \\
+   %\quad
+   \subfloat[]
+    {\includegraphics[width=\columnwidth]{img/adaptive_eta_without_threshold_last_frame.png}\label{fig_sub_eta_result}}
+\caption{(a) 10 initial partitions obtained by K-Means. (b) The $\eta$ of the small cluster is under-estimated. The radius of each circle is the corresponding $\eta_j$}
+\label{fig_eta}
+\end{figure}
+#+END_LaTeX
 
 From the previous analysis, the NPCM algorithm is summarized in Algorithm \ref{alg:npcm}.
 #+BEGIN_LaTeX
