@@ -45,8 +45,9 @@ NPCM runs with two parameters, $m_{ini}$ is the potentially over-specified initi
 #+END_LaTeX 
 ** Introduction
 Our contributions are summarized as follows:
-1. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final 
-
+1. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final
+2. The clustering algorithm two parameters, the over-specified number of clusters and a parameter that controls the closeness of clusters in the clustering result.
+3. We find that the adaption of $\eta_j$ in APCM and UPCM is a positive feedback process, and the adaptive $\sigma_v$ approach adopted in NPCM makes this process stronger, so the convenience is faster.
 
 ** Background Knowledge
 In this section, we provide the background knowledge for our work. The PCM and APCM algorithms are first reviewed. Then, we review the UPCM algorithm, which utilizes the conditional fuzzy set framework to control the bandwidth of the membership function of points in a more natural and flexible way than APCM.
@@ -157,7 +158,7 @@ Second, as stated in the motivations, the background noise clusters in the initi
 \end{equation}
 #+END_LaTeX
 where $d$ is the dimension of $\mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cluster $C_j$ is a noise cluster and is eliminated if $\rho_j<0.1\rho_0$. For the case of Fig.\ref{fig_sub_noise_ini}, clusters 5, 6, 7, and 8 will be eliminated.
-*** Modeling the relation between $\alpha$ and $\sigma_v$
+*** Modeling the Relation Between $\alpha$ and $\sigma_v$
 In UPCM, the noise-level parameter $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. Specifically, $\alpha$ measures the closeness of two cluster prototypes in the clustering result. When a large $\alpha$ is specified, we consider that there may be clusters very close to each other, and the $\eta_j$ estimated in this case may be very uncertain. With the above interpretation of $\alpha$, the interplay between $\alpha$ and $\sigma_v$ becomes simple and intuitive, i.e., a large specification of noise level $\alpha$ means that fewer points (that we consider as good points) are actually contributed to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility
 #+BEGIN_LaTeX
 \footnote{From \eqref{upcm_u_update}, we see that increasing $\sigma_v$ can increase $u_{ij}$ of a point $\mathbf{x}_i$, and from \eqref{upcm_theta_update}, we see that cluster $C_j$ moves (i.e., change of $\boldsymbol{\theta}_j$) only when there are enough points that meet the condition $u_{ij}\geq \alpha$.}
@@ -214,7 +215,7 @@ because $\sigma_v$ increases with $\eta_j$ (see \eqref{npcm_sig_alpha_relation})
 However, this benefit comes at a price: the adaption of each $\eta_j$ should be further controlled to ensure that $\eta_j$ can be correctly estimated to represent the physical cluster and the above positive feedback process can stop at the right time. Otherwise, the underlying structures wouldn't be correctly discovered.
 More specifically, there can be situations where cluster $C_j$ becomes unexpectedly large for two reasons. First, points of background noise clusters are allowed to contribute to the adaption of $\eta_j$. Second, boundary points between $C_j$ and other clusters gradually become more compatible to $C_j$ due to the positive feedback process. As a result, $\eta_k$ of the nearby smaller cluster $C_k$ is dramatically under-estimated. See Fig.\ref{fig_eta} for illustration of this problem.
 #+BEGIN_LaTeX
-\footnote{UPCM and APCM do not have this problem when their parameters are properly chosen because all clusters in UPCM have the same $\sigma_v$ (see \eqref{upcm_u_update}) to ensure that the small cluster can have enough bandwidth to represent the physical cluster and $\gamma_j\text{s}$ of all clusters in APCM are also confined by the same $\alpha$ parameter (see \eqref{corrected_eta}). So, the adjustment of $\eta_j$ between successive iterations is not as large as in NPCM, and the compatibility of boundary points to the clusters do not change very much.} 
+\footnote{UPCM and APCM do not have this problem when their parameters are properly chosen because all clusters in UPCM have the same $\sigma_v$ (see \eqref{upcm_u_update}), which ensures that the small cluster can have enough bandwidth to represent the physical cluster, and $\gamma_j\text{s}$ of all clusters in APCM are also confined by a $\alpha$ parameter (see \eqref{corrected_eta}). So, their adjustment of $\eta_j$ between successive iterations is not as large as in NPCM, and the compatibility of boundary points to the clusters do not change very much.} 
 #+END_LaTeX
 To solve this problem, we modify the $\eta_j$ update as:
 #+BEGIN_LaTeX
@@ -234,7 +235,7 @@ where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The r
    %\quad
    \subfloat[]
     {\includegraphics[width=\columnwidth]{img/adaptive_eta_without_threshold_last_frame.png}\label{fig_sub_eta_result}}
-\caption{(a) 10 initial partitions obtained by K-Means. (b) The $\eta$ of the small cluster is under-estimated. The radius of each circle is the corresponding $\eta_j$}
+\caption{(a) 10 initial partitions obtained by K-Means. (b) The $\eta$ of the large cluster is over-estimated because of the noisy points on the left , whereas the $\eta$ of the small cluster is under-estimated. The radius of each circle is the corresponding $\eta_j$}
 \label{fig_eta}
 \end{figure}
 #+END_LaTeX
