@@ -235,7 +235,7 @@ where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The r
    %\quad
    \subfloat[]
     {\includegraphics[width=\columnwidth]{img/adaptive_eta_without_threshold_last_frame.png}\label{fig_sub_eta_result}}
-\caption{(a) 10 initial partitions obtained by K-Means. (b) The $\eta$ of the large cluster is over-estimated because of the noisy points on the left , whereas the $\eta$ of the small cluster is under-estimated. The radius of each circle is the corresponding $\eta_j$}
+\caption{(a) 10 initial partitions obtained by K-Means. (b) The $\eta$ of the large cluster is over-estimated because of the noisy points on the left, whereas the $\eta$ of the small cluster is under-estimated. The radius of each circle is the corresponding $\eta_j$}
 \label{fig_eta}
 \end{figure}
 #+END_LaTeX
@@ -275,7 +275,9 @@ From the previous analysis, the NPCM algorithm is summarized in Algorithm \ref{a
 \end{algorithmic}
 \end{algorithm}
 #+END_LaTeX
-*** ApTEMPT
+** Experimental Results
+*Experiment 1:*
+** ApTEMPT
 \appendix
 In this appendix, we prove the cluster elimination and the convergence of the prototypes to the center of dense regions. Because some convergence results of APCM \cite{xenaki_novel_2016} are applicable to NPCM, we only give the essential part of the proof. 
 
