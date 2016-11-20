@@ -183,9 +183,9 @@ class upcm():
         # ax.set_title("Clustering Finished")
         labels = np.argmax(self.u, axis=1)
         for label in range(self.m):
-            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.', color=colors[label])
-            ax.plot(self.theta[label][0], self.theta[label][1], 'rs')
-            ax.add_patch(plt.Circle((self.theta[label][0], self.theta[label][1]),
+            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.', color=colors[label], zorder=1)
+            ax.plot(self.theta[label][0], self.theta[label][1], 'rs', zorder=2)
+            ax.add_patch(plt.Circle((self.theta[label][0], self.theta[label][1]), zorder=3,
                                     radius=self.ita[label], color='k', fill=None, lw=2))
         plt.figure("last frame")
         plt.savefig(self.last_frame_name, dpi=300, bbox_inches='tight')
