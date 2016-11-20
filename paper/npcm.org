@@ -235,7 +235,7 @@ where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}. The r
    %\quad
    \subfloat[]
     {\includegraphics[width=\columnwidth]{img/adaptive_eta_without_threshold_last_frame.png}\label{fig_sub_eta_result}}
-\caption{Detailed description of this dataset is in *Experiment 1*. (a) 10 initial partitions obtained by K-Means. (b) The $\eta$ of the large cluster is over-estimated because of the noisy points on the left, whereas the $\eta$ of the small cluster is under-estimated. The radius of each circle is the corresponding $\eta_j$}
+\caption{Detailed description of this dataset is in Experiment 1. (a) 10 initial partitions obtained by K-Means. (b) The $\eta$ of the large cluster is over-estimated because of the noisy points on the left, whereas the $\eta$ of the small cluster is under-estimated. The radius of each circle is the corresponding $\eta_j$}
 \label{fig_eta}
 \end{figure}
 #+END_LaTeX
@@ -328,8 +328,15 @@ The radius of each circle is of the same meaning as in Fig.\ref{fig_small_cluste
 \end{figure}
 #+END_LaTeX
 
-In summary, the parameter $\alpha$ should be chosen to  properly characterize the closeness of clusters in the clustering result. Specifically, if we specify a low noise level, e.g., in *Experiment 2*, $\alpha=0.1$, but the true noise level of the physical clusters is higher (i.e., they are closer to each other than we think), then NPCM would treat them as one cluster and the clusters merge; in *Experiment 1*, there are no overlapped clusters, and we can set an arbitrary $\alpha$. So the requirement of NPCM is that we should specify a large $\alpha$ in order to robustly characterize the closeness of clusters in the dataset (i.e., noise level of the dataset).
+In summary, the parameter $\alpha$ should be chosen to  properly characterize the closeness of clusters in the clustering result. Specifically, if we specify a low noise level, e.g., in Experiment 2, $\alpha=0.1$, but the true noise level of the physical clusters is higher (i.e., they are closer to each other than we think), then NPCM would treat them as one cluster and the clusters merge; in Experiment 1, there are no overlapped clusters, and we can set an arbitrary $\alpha$.
+However, as pointed out in UPCM, each physical cluster can be seen as noise to other physical clusters. So we should specify a large noise level $\alpha$ in order to robustly characterize the closeness of clusters in the dataset (i.e., noise level of the dataset).
 ** Conclusion
+In this paper, we develop a noise level based PCM clustering algorithm (NPCM). Specifically, NPCM addresses the background noise cluster problem encountered in APCM and UPCM and exploit the intuition from UPCM to eliminate the parameter $\sigma_v$ based on $\eta_j$.
+There are two parameters in NPCM: $m_{ini}$ is a possibly over-specified number of clusters to ensure that there is at least one cluster placed near each physical cluster in the initial partition, and $\alpha$ characterizes the closeness of clusters in the clustering result.
+The advantage of NPCM is that the parameters are intuitive to choose and NPCM does not need strong prior information (e.g., the cluster number) of the dataset.
+We find that the update of $\eta_j$ is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, and a direct consequence of this fact is that NPCM has a faster convergence rate. 
+Experiments show that the clustering result is not sensitive to the choosing of $\alpha$ unless there are overlapped clusters in the dataset.
+In addition, the Appendix shows the convergence behavior of NPCM.
 \appendix
 In this appendix, we prove the cluster elimination and the convergence of the prototypes to the center of dense regions. Because some convergence results of APCM \cite{xenaki_novel_2016} are applicable to NPCM, we only give the essential part of the proof. 
 
