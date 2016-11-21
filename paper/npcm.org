@@ -44,11 +44,23 @@ NPCM runs with two parameters, $m_{ini}$ is the potentially over-specified initi
 \end{abstract}
 #+END_LaTeX 
 ** Introduction
-Our contributions are summarized as follows:
+The goal of clustering analysis is to discover natural groups of a set of points according to intrinsic characteristics or similarity \cite{jain_data_2010}. An important question about clustering is how much information we should provide the clustering algorithm in order to discover natural (physical) clusters. K-Means \cite{jain_data_2010} and DBSCAN \cite{ester_density-based_1996} represent two different approaches. K-Means needs the exact number of clusters to work, whereas DBSCAN needs to know the lowest density (specified by two parameters: Eps and MinPts) for a cluster to form. K-Means needs only one parameter, but at the price of inability to handle noise and outliers, and the exact cluster number is very strong prior information. In contrast, DBSCAN provides the user much flexible in choosing parameters, and performs well in noisy environments.
+An guess  from the above observation is that a clustering algorithm should have the information of the cluster number and information of the property (e.g., density or closeness) of clusters
+We expect that a clustering algorithm should have the information of the cluster number and information of the property (e.g., density or closeness) of clusters
+
+
+
+Second, is how to specify the cluster number to a clustering algorithm. Traditional algorithms require exact number of clusters. Now, with the cluster elimination capability, keller_line,hah, apcm(and the cites in this paper), however, we must pay a price for not giving the exact cluster number, i.e., we must specify other information, like the bandwidth constraint, and in this paper, the closeness of clusters.
+
+
+*Our contributions* 
 1. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise cluster are highly possible to become very large and finally merge with other physical clusters, so that there is only one big cluster in the final
 2. The clustering algorithm two parameters, the over-specified number of clusters and a parameter that controls the closeness of clusters in the clustering result.
 3. We find that the adaption of $\eta_j$ in APCM and UPCM is a positive feedback process, and the adaptive $\sigma_v$ approach adopted in NPCM makes this process stronger, so the convenience is faster.
-*Related Work:*
+*Related Work.*
+Reducing the influence of points in other clusters on the $\boldsymbol{\theta}_j$ (prototype of cluster $C_j$) update is an important issue in the PCM literature, especially when there are close clusters in the dataset. One way to address this issue is to introduce sparsity on the membership values of a point by adding a penalty term of membership values (e.g., \cite{inokuchi_sparse_2007}\cite{xenaki_sparsity-aware_2016}) to the cost function, i.e., the membership of a point to a distant cluster is forced to be $0$. However, the modified cost function is difficult to solve. The other way to address the above issue is more direct. It is proposed in \cite{hou_pcm_2016} that each physical cluster can be seen as noise to other physical clusters, so a point is allowed to contribute to the adaption of $\boldsymbol{\theta}_j$ only if the membership value to cluster $C_j$ is larger than a threshold $\alpha$. The parameter $\alpha$ controls the closeness of clusters in the clustering result and is intuitive to choose.
+
+The rest of the paper is organized as follows. Section \ref{sec-2} introduces the background knowledge for our work. In Section \ref{sec-3}, the proposed noise level based PCM (NPCM) clustering algorithm is fully presented. In Section \ref{sec-4}, experiments are performed to illustrate the behavior of NPCM. Finally, concluding remarks are provided in Section \ref{sec-5}.
 ** Background Knowledge
 In this section, we provide the background knowledge for our work. The PCM and APCM algorithms are first reviewed. Then, we review the UPCM algorithm, which utilizes the conditional fuzzy set framework to control the bandwidth of the membership function of points in a more natural and flexible way than APCM.
 *** The PCM and APCM Clustering Algorithms
@@ -276,7 +288,7 @@ From the previous analysis, the NPCM algorithm is summarized in Algorithm \ref{a
 \end{algorithm}
 #+END_LaTeX
 ** Experimental Results
-In this section, we investigate the flexibility of choosing parameters in NPCM and also the benefit of the noise level parameter $\alpha$ through experiments. For the experiments of this paper, the algorithm terminates when the change in $\theta_j\text{s}$ between two successive iterations is below than $10^{-5}$, i.e., $\Sigma_j\|\boldsymbol{\theta}_j^{t}-\boldsymbol{\theta}_j^{t-1}\|\leq10^{-5}$. The circle centers of all figures are the corresponding $\theta_j\text{s}$.
+In this section, we investigate the flexibility of choosing parameters in NPCM and also the benefit of the noise level parameter $\alpha$ through experiments. For the experiments of this paper, the algorithm terminates when the change in $\theta_j\text{s}$ between two successive iterations is below than $10^{-5}$, i.e., $\Sigma_j\|\boldsymbol{\theta}_j^{t}-\boldsymbol{\theta}_j^{t-1}\|\leq10^{-5}$. The circle centers of all figures are the corresponding $\boldsymbol{\theta}_j\text{s}$.
 
 *Experiment 1:* In this dataset, there are two physical clusters generated by normal distributions with centers $\mathbf{c_1}=[20, 20]^T$, $\mathbf{c_2}=[30, 30]^T$, covariance matrixes $\mathbf{\Sigma_1}=20\mathbf{I}$, $\mathbf{\Sigma_2}=\mathbf{I}$, $N_1=1000$ points, and $N_2=200$ points  respectively, where $\mathbf{I}$ is the $2\times 2$ identity matrix. Moreover, 200 data points are added randomly as noise in the region where data live. 
 The initialization result obtained by K-Means with 10 clusters is shown in Fig.\ref{fig_sub_eta_ini}.
