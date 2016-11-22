@@ -66,9 +66,10 @@ if __name__ == '__main__':
     ax = fig2.gca()
     ax.grid(True)
     # 0.1,0.3,0.5
-    n_cluster, alpha_cut = 10, 0.5
+    n_cluster, alpha_cut = 10, 0.1
     ini_save_name = r".\video\example_close_cluster_ini.png"
-    last_frame_name = r'..\paper\img\example_close_cluster_last_frame%.1f.png' % (alpha_cut)
+    last_frame_name = r'..\paper\img\example_close_cluster_last_frame_n_%d_alpha_0_%d.png' % (
+        n_cluster, alpha_cut * 10)
     tmp_video_name = r'.\video\sexample_close_cluster_n_%d_alpha_%.1f_tmp.mp4' % (n_cluster, alpha_cut)
     video_save_newFps_name = r'.\video\example_close_cluster_n_%d_alpha_%.1f.mp4' % (n_cluster, alpha_cut)
     clf = npcm_plot(X, n_cluster, ax=ax, x_lim=(x_lim), y_lim=(y_lim), alpha_cut=alpha_cut,
