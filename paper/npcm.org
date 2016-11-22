@@ -35,12 +35,10 @@
 # In IEEEtran_HOWTO the equations section on page 8. this 2500 config is to estore IEEEtran ability to automatically break within multiline equations
 #+LATEX_HEADER: \interdisplaylinepenalty=2500
 
-#+TITLE: NPCM: PCM Clustering based on Noise Level
+#+TITLE: PCM Clustering based on Noise Level
 #+BEGIN_LaTeX
 \begin{abstract}
-Possibilistic c-Means (PCM) based clustering algorithms  are widely used in the literature. The unified framework (UPCM) of  PCM and adaptive PCM (APCM) controls the clustering process from the perspective of uncertainty and UPCM can effectively discover the underlying structure of the dataset. However, UPCM has three parameters to choose.
-In this paper, we present an extension of UPCM, i.e., noise level based pcm (NPCM), to ease the parameter-choosing issue and also to  improve UPCM.
-NPCM runs with two parameters, $m_{ini}$ is the potentially over-specified initial number of clusters, $\alpha$ is the noise level of the dataset which characterizes minimum closeness of clusters. NPCM then discovers the true number of clusters. $\alpha$ controls the closeness of generated clusters. Another property of NPCM is that the bandwidth (radius) of each cluster can be correctly estimated, furthermore, NPCM automatically calculates the uncertainty of the estimated bandwidth ($\sigma_v$). More specifically, a large bandwidth corresponds to a large bandwidth uncertainty $\sigma_v$. 
+Possibilistic c-Means (PCM) based clustering algorithms are widely used in the literature. In this paper, we develop a noise level based PCM (NPCM) clustering algorithm. NPCM needs two kinds of information to specify for the clustering task, i.e., information of the cluster number and information of the property of clusters. More specifically, there are two parameters in NPCM where $m_{ini}$ is a possibly over-specified cluster number, and $\alpha$ characterizes the closeness of clusters in the clustering result. Furthermore, we find that the update of $\eta_j$ in adaptive PCM (APCM) is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, which leads to a faster convergence rate. Experiments show that the clustering result is not sensitive to the choosing of $\alpha$ unless there are overlapped clusters in the dataset.
 \end{abstract}
 #+END_LaTeX 
 ** Introduction
