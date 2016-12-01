@@ -5,7 +5,7 @@ import matplotlib.animation as animation
 from algorithms import npcm_plot
 from sklearn.datasets import make_blobs
 
-colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen']
+colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
 markers = ['+', 'x', 'p', '.', 'o', '8', 'p', 'd', '*', '2', 'h'] * 30
 plt.style.use('classic')
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     ax = fig2.gca()
     ax.grid(True)
     # 0,0.1,0.3,0.5
-    n_cluster, alpha_cut = 10, 0.
+    n_cluster, alpha_cut = 10, 0.5
     ini_save_name = r".\video\small_cluster_structure_preserve_ini.png"
     last_frame_name = r'..\paper\img\small_cluster_structure_preserve_last_frame_n_%d_alpha_0_%d.png' % (
     n_cluster, alpha_cut * 10)

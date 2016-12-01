@@ -6,8 +6,8 @@ import logging
 
 logging.captureWarnings(True)
 
-colors = ['c', 'orange', 'g', 'r', 'b', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
-# colors = ['orange','c', 'g', 'r', 'b', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
+colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
+# colors = ['orange', 'b', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
 markers = ['+', 'x', 'p', '.', 'o', '8', 'p', '1', '*', '2', 'h'] * 30
 plt.style.use('classic')
 
