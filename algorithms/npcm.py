@@ -285,9 +285,18 @@ class npcm():
             self.update_u_theta()
             self.cluster_elimination()
             self.adapt_ita()
-            if (len(theta_ori) == len(self.theta)) and (np.linalg.norm(self.theta - theta_ori) < self.error):
+            # Next is the termination test. We include the case where the current result is same with
+            # the previous previous one, i.e., x[t] is same with x[t-2]
+            # Note that, the time ordering is: theta_pre > theta_ori > self.theta
+            flag1 = (len(theta_ori) == len(self.theta)) and (np.linalg.norm(self.theta - theta_ori) < self.error)
+            try:  # theta_pre is not avalable for the first run
+                flag2 = (len(theta_ori) == len(self.theta)) and (np.linalg.norm(self.theta - theta_pre) < self.error)
+            except:
+                flag2 = False
+            if flag1 or flag2:
                 self.save_last_frame(p)
                 break
+            theta_pre = theta_ori.copy()
             p += 1
             yield p  # here the current iteration result has been recorded in the class, the result is ready for plotting.
             # note that the yield statement returns p as an argument to the callback function __call__(self, p) which is called by the
