@@ -1,5 +1,5 @@
-% Created 2016-11-22 周二 18:27
-\documentclass[journal]{IEEEtran}
+% Created 2016-12-01 周四 20:25
+\documentclass[conference]{IEEEtran}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{fixltx2e}
@@ -42,6 +42,8 @@
 \begin{document}
 
 \maketitle
+
+
 \begin{abstract}
 Possibilistic c-means (PCM) based clustering algorithms are widely used in the literature. In this paper, we develop a noise level based PCM (NPCM) clustering algorithm. NPCM needs two kinds of information to specify for the clustering task, i.e., information of the cluster number and information of the property of clusters. More specifically, there are two parameters in NPCM where $m_{ini}$ is a possibly over-specified cluster number, and $\alpha$ characterizes the closeness of clusters in the clustering result. Furthermore, we find that the update of $\eta_j$ in adaptive PCM (APCM) is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, which leads to a faster convergence rate. Experiments show that the clustering result is not sensitive to the choosing of $\alpha$ unless there are overlapped clusters in the dataset.
 \end{abstract}

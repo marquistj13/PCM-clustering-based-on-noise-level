@@ -4,7 +4,7 @@
 # set DATE to void to avoid it's display
 #+DATE: 
 #+LATEX_CLASS: IEEEtran
-#+LaTeX_CLASS_OPTIONS: [journal]
+#+LaTeX_CLASS_OPTIONS: [conference]
 
 #+LATEX_HEADER: \usepackage[thmmarks, amsmath, thref]{ntheorem}
 #+LATEX_HEADER: \theoremstyle{definition}
