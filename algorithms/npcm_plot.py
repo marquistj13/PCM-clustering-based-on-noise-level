@@ -7,6 +7,8 @@ import logging
 logging.captureWarnings(True)
 
 colors = ['c', 'orange', 'g', 'r', 'b', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
+# colors = ['orange','c', 'g', 'r', 'b', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
+markers = ['+', 'x', 'p', '.', 'o', '8', 'p', '1', '*', '2', 'h'] * 30
 plt.style.use('classic')
 
 
@@ -55,7 +57,8 @@ class npcm_plot():
         # initialise the lines to update (each line represents a cluster)
         # this idea comes from http://stackoverflow.com/questions/19519587/python-matplotlib-plot-multi-lines-array-and-animation
         # i.e.,o animate N lines, you just need N Line2D objects
-        self.lines = [ax.plot([], [], '.', color=colors[label])[0] for label in range(self.m_ori)]
+        self.lines = [ax.plot([], [], linestyle='None', marker=markers[label], color=colors[label])[0] for label in
+                      range(self.m_ori)]
         # centers
         # self.line_centers=[ax.plot([],[], 's',color=colors[label])[0] for label in range(self.m_ori) ]
         self.line_centers = [ax.plot([], [], 'rs')[0] for _ in range(self.m_ori)]
@@ -116,8 +119,8 @@ class npcm_plot():
         fig = plt.figure("KMeans_init", dpi=300, figsize=self.save_figsize)
         ax = fig.gca()
         for label in range(self.m):
-            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
-                    color=colors[label])
+            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], linestyle='None',
+                    marker=markers[label], color=colors[label])
             ax.text(self.theta[label][0], self.theta[label][1], "%d" % label, size='xx-large')
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
@@ -260,7 +263,8 @@ class npcm_plot():
         # ax.set_title("Clustering Finished")
         labels = np.argmax(self.u, axis=1)
         for label in range(self.m):
-            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.', color=colors[label], zorder=1)
+            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], linestyle='None',
+                    marker=markers[label], color=colors[label], zorder=1)
             ax.plot(self.theta[label][0], self.theta[label][1], 'rs', zorder=2)
             ax.add_patch(plt.Circle((self.theta[label][0], self.theta[label][1]), zorder=3,
                                     radius=self.ita[label], color='k', fill=None, lw=3.5, linestyle='dotted'))

@@ -6,7 +6,8 @@ import logging
 
 logging.captureWarnings(True)
 
-colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
+colors = ['c', 'orange', 'g', 'r', 'b', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
+markers = ['+', 'x', 'p', '.', 'o', '8', 'p', '1', '*', '2', 'h'] * 30
 plt.style.use('classic')
 
 
@@ -19,7 +20,7 @@ v_exp_marginal = np.vectorize(exp_marginal)
 
 
 class npcm_eta_zero():
-    def __init__(self, X, m, sig_v0, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=10000, ini_save_name="",
+    def __init__(self, X, m, ax, x_lim, y_lim, alpha_cut=0.1, error=1e-5, maxiter=10000, ini_save_name="",
                  last_frame_name="", save_figsize=(8, 6)):
         """
         :param X: scikit-learn form, i.e., pf shape (n_samples, n_features)
@@ -30,7 +31,6 @@ class npcm_eta_zero():
         self.x = X
         self.m = m
         self.m_ori = m  # the original number of clusters specified
-        self.sig_v0 = float(sig_v0)
         self.ax = ax
         self.x_lim = x_lim  # tuple
         self.y_lim = y_lim
@@ -56,23 +56,28 @@ class npcm_eta_zero():
         # initialise the lines to update (each line represents a cluster)
         # this idea comes from http://stackoverflow.com/questions/19519587/python-matplotlib-plot-multi-lines-array-and-animation
         # i.e.,o animate N lines, you just need N Line2D objects
-        self.lines = [ax.plot([], [], '.', color=colors[label])[0] for label in range(self.m_ori)]
+        self.lines = [ax.plot([], [], linestyle='None', marker=markers[label], color=colors[label])[0] for label in
+                      range(self.m_ori)]
         # centers
         # self.line_centers=[ax.plot([],[], 's',color=colors[label])[0] for label in range(self.m_ori) ]
         self.line_centers = [ax.plot([], [], 'rs')[0] for _ in range(self.m_ori)]
         # the title
-        self.text = ax.text(0.02, 0.84, '', transform=ax.transAxes)
+        self.text = ax.text(0.02, 0.75, '', transform=ax.transAxes)
         # the limit of axixes
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
-        # add circles to indication the standard deviation, i.e., the influence of each cluster
-        self.circles = [ax.add_patch(plt.Circle((0, 0), radius=0, color='k', fill=None, lw=2)) for _ in
-                        range(self.m_ori)]
+        # add circles to indicate the standard deviation, i.e., ita_j
+        self.inner_circles = [
+            ax.add_patch(plt.Circle((0, 0), radius=0, color='k', fill=None, lw=3.5, linestyle='dotted'))
+            for _ in range(self.m_ori)]
+        # add circles to indicatethe the radius at which the membership dereases to alpha when sigma_v=0
+        self.circles = [ax.add_patch(plt.Circle((0, 0), radius=0, color='k', fill=None, lw=2, linestyle='solid')) for _
+                        in range(self.m_ori)]
         # outer circles to indicate the radius at which the membership dereases to alpha
         self.outer_circles = [ax.add_patch(plt.Circle((0, 0), radius=0, color='k', fill=None, lw=2, linestyle='dashed'))
                               for _ in range(self.m_ori)]
         # remember to add the needs-to-update elments to the return list
-        return self.lines + self.line_centers + self.circles + [self.text] + self.outer_circles
+        return self.lines + self.line_centers + self.inner_circles + self.circles + [self.text] + self.outer_circles
 
     def init_theta_ita(self):
         """
@@ -113,8 +118,8 @@ class npcm_eta_zero():
         fig = plt.figure("KMeans_init", dpi=300, figsize=self.save_figsize)
         ax = fig.gca()
         for label in range(self.m):
-            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.',
-                    color=colors[label])
+            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], linestyle='None',
+                    marker=markers[label], color=colors[label])
             ax.text(self.theta[label][0], self.theta[label][1], "%d" % label, size='xx-large')
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
@@ -250,18 +255,24 @@ class npcm_eta_zero():
         # the limit of axixes
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
-        # tmp_text = "Iteration times:%2d\n" % p
-        # tmp_text += r"$\alpha={:.2f},\sigma_v={:.2f}$".format(self.alpha_cut, self.sig_v0) + "\n"
-        # tmp_text += "Initial    number:%2d\nCurrent number:%2d" % (self.m_ori, self.m)
-        tmp_text = "Initial    number:%2d\nCurrent number:%2d" % (self.m_ori, self.m)
-        ax.text(0.02, 0.87, tmp_text, transform=ax.transAxes)
+        tmp_text = "Iteration times:%2d\n" % p
+        tmp_text += r"$\alpha={:.2f}$".format(self.alpha_cut) + "\n"
+        tmp_text += "Initial    number:%2d\nCurrent number:%2d" % (self.m_ori, self.m)
+        ax.text(0.02, 0.75, tmp_text, transform=ax.transAxes)
         # ax.set_title("Clustering Finished")
         labels = np.argmax(self.u, axis=1)
         for label in range(self.m):
-            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], '.', color=colors[label], zorder=1)
+            ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], linestyle='None',
+                    marker=markers[label],
+                    color=colors[label], zorder=1)
             ax.plot(self.theta[label][0], self.theta[label][1], 'rs', zorder=2)
             ax.add_patch(plt.Circle((self.theta[label][0], self.theta[label][1]), zorder=3,
-                                    radius=self.ita[label], color='k', fill=None, lw=2))
+                                    radius=self.ita[label], color='k', fill=None, lw=3.5, linestyle='dotted'))
+            ax.add_patch(plt.Circle((self.theta[label][0], self.theta[label][1]), zorder=3,
+                                    radius=self.ita_alpha_ori[label], color='k', fill=None, lw=2, linestyle='solid'))
+            ax.add_patch(plt.Circle((self.theta[label][0], self.theta[label][1]), zorder=3,
+                                    radius=self.ita_alpha_sigmaV[label], color='k', fill=None, lw=2,
+                                    linestyle='dashed'))
         plt.figure("last frame")
         plt.savefig(self.last_frame_name, dpi=300, bbox_inches='tight')
         plt.close("last frame")
@@ -286,9 +297,18 @@ class npcm_eta_zero():
             self.update_u_theta()
             self.cluster_elimination()
             self.adapt_ita()
-            if (len(theta_ori) == len(self.theta)) and (np.linalg.norm(self.theta - theta_ori) < self.error):
+            # Next is the termination test. We include the case where the current result is same with
+            # the previous previous one, i.e., x[t] is same with x[t-2]
+            # Note that, the time ordering is: theta_pre > theta_ori > self.theta
+            flag1 = (len(theta_ori) == len(self.theta)) and (np.linalg.norm(self.theta - theta_ori) < self.error)
+            try:  # theta_pre is not avalable for the first run
+                flag2 = (len(theta_ori) == len(self.theta)) and (np.linalg.norm(self.theta - theta_pre) < self.error)
+            except:
+                flag2 = False
+            if flag1 or flag2:
                 self.save_last_frame(p)
                 break
+            theta_pre = theta_ori.copy()
             p += 1
             yield p  # here the current iteration result has been recorded in the class, the result is ready for plotting.
             # note that the yield statement returns p as an argument to the callback function __call__(self, p) which is called by the
@@ -307,34 +327,40 @@ class npcm_eta_zero():
         # the following logic is as this: if the final cluster number is equal to the specified value
         # then draw all the clusters, otherwise, the deleted clusters are not plotted
         if self.m == self.m_ori:
-            for label, line, line_center, circle, outer_circle in \
-                    zip(range(self.m), self.lines, self.line_centers, self.circles, self.outer_circles):
+            for label, line, line_center, inner_circle, circle, outer_circle \
+                    in zip(range(self.m), self.lines, self.line_centers, self.inner_circles, self.circles,
+                           self.outer_circles):
                 line.set_data(self.x[labels == label][:, 0], self.x[labels == label][:, 1])
                 line_center.set_data(self.theta[label][0], self.theta[label][1])
+                inner_circle.center = self.theta[label][0], self.theta[label][1]
+                inner_circle.set_radius(self.ita[label])
                 circle.center = self.theta[label][0], self.theta[label][1]
                 circle.set_radius(self.ita_alpha_ori[label])
                 outer_circle.center = self.theta[label][0], self.theta[label][1]
                 outer_circle.set_radius(self.ita_alpha_sigmaV[label])
                 # print label, self.ita[label], len(self.ita)
         else:
-            for label, line, line_center, circle, outer_circle in zip(range(self.m), self.lines[:self.m], \
-                                                                      self.line_centers[:self.m], self.circles[:self.m],
-                                                                      self.outer_circles[:self.m]):
+            for label, line, line_center, inner_circle, circle, outer_circle \
+                    in zip(range(self.m), self.lines[:self.m], self.line_centers[:self.m], self.inner_circles[:self.m],
+                           self.circles[:self.m], self.outer_circles[:self.m]):
                 line.set_data(self.x[labels == label][:, 0], self.x[labels == label][:, 1])
                 line_center.set_data(self.theta[label][0], self.theta[label][1])
+                inner_circle.center = self.theta[label][0], self.theta[label][1]
+                inner_circle.set_radius(self.ita[label])
                 circle.center = self.theta[label][0], self.theta[label][1]
                 circle.set_radius(self.ita_alpha_ori[label])
                 outer_circle.center = self.theta[label][0], self.theta[label][1]
                 outer_circle.set_radius(self.ita_alpha_sigmaV[label])
                 # self.log.info("Total %d clusters, %d th bandwidth %f" % (len(self.ita), label, self.ita[label]))
-            for label, line, line_center, circle, outer_circle in zip(range(self.m, self.m_ori), self.lines[self.m:],
-                                                                      self.line_centers[self.m:], self.circles[self.m:],
-                                                                      self.outer_circles[self.m:]):
+            for label, line, line_center, inner_circle, circle, outer_circle \
+                    in zip(range(self.m, self.m_ori), self.lines[self.m:], self.line_centers[self.m:],
+                           self.inner_circles[self.m:], self.circles[self.m:], self.outer_circles[self.m:]):
                 line.set_data([], [])
                 line_center.set_data([], [])
+                inner_circle.set_radius(0)
                 circle.set_radius(0)
                 outer_circle.set_radius(0)
         tmp_text += "Initial    number:%2d\nCurrent number:%2d" % (self.m_ori, self.m)
         self.text.set_text(tmp_text)
         # remember to add the needs-to-update elments to the return list
-        return self.lines + self.line_centers + self.circles + [self.text] + self.outer_circles
+        return self.lines + self.line_centers + self.inner_circles + self.circles + [self.text] + self.outer_circles

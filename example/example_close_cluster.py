@@ -6,6 +6,7 @@ from algorithms import npcm_plot
 from sklearn.datasets import make_blobs
 
 colors = ['c', 'orange', 'g', 'r', 'b', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
+markers = ['+', 'x', 'p', '.', 'o', '8', 'p', 'd', '*', '2', 'h'] * 30
 plt.style.use('classic')
 
 from moviepy.video.io.ffmpeg_reader import FFMPEG_VideoReader
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     ax_fig1 = fig1.gca()
     ax_fig1.grid(True)
     for label in range(2):
-        ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], '.',
+        ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], linestyle='None', marker=markers[label],
                      color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
     ax_fig1.set_xlim(x_lim)
     ax_fig1.set_ylim(y_lim)

@@ -6,6 +6,7 @@ from algorithms import npcm_plot
 from sklearn.datasets import make_blobs
 
 colors = ['b', 'orange', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen']
+markers = ['+', 'x', 'p', '.', 'o', '8', 'p', 'd', '*', '2', 'h'] * 30
 plt.style.use('classic')
 
 from moviepy.video.io.ffmpeg_reader import FFMPEG_VideoReader
@@ -60,7 +61,7 @@ if __name__ == '__main__':
     ax_fig1 = fig1.gca()
     ax_fig1.grid(True)
     for label in range(3):
-        ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], '.',
+        ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], linestyle='None', marker=markers[label],
                      color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
     ax_fig1.set_xlim(x_lim)
     ax_fig1.set_ylim(y_lim)
@@ -72,7 +73,7 @@ if __name__ == '__main__':
     ax = fig2.gca()
     ax.grid(True)
     # 0,0.1,0.3,0.5
-    n_cluster, alpha_cut = 10, 0.5
+    n_cluster, alpha_cut = 10, 0.
     ini_save_name = r".\video\small_cluster_structure_preserve_ini.png"
     last_frame_name = r'..\paper\img\small_cluster_structure_preserve_last_frame_n_%d_alpha_0_%d.png' % (
     n_cluster, alpha_cut * 10)

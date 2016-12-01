@@ -81,7 +81,7 @@ if __name__ == '__main__':
         n_cluster, sigma_v, alpha_cut)
     video_save_newFps_name = r'.\video\adaptive_eta_without_threshold_n_%d_sigmav_%.1f_alpha_%.1f.mp4' % (
         n_cluster, sigma_v, alpha_cut)
-    clf = npcm_eta_zero(X, n_cluster, sigma_v, ax=ax, x_lim=(x_lim), y_lim=(y_lim), alpha_cut=alpha_cut,
+    clf = npcm_eta_zero(X, n_cluster, ax=ax, x_lim=(x_lim), y_lim=(y_lim), alpha_cut=alpha_cut,
                ini_save_name=ini_save_name, last_frame_name=last_frame_name, save_figsize= fig_size)
 
     anim = animation.FuncAnimation(fig2, clf, frames=clf.fit,
