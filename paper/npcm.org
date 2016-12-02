@@ -6,9 +6,6 @@
 #+LATEX_CLASS: IEEEtran
 #+LaTeX_CLASS_OPTIONS: [conference]
 
-# Turn off page number
-#+LATEX_HEADER: \pagenumbering{gobble}
-
 #+LATEX_HEADER: \usepackage[thmmarks, amsmath, thref]{ntheorem}
 #+LATEX_HEADER: \theoremstyle{definition}
 # Adds automatic line break, if heading is too long
