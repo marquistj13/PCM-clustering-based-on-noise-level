@@ -38,7 +38,8 @@
 #+TITLE: PCM Clustering based on Noise Level
 #+BEGIN_LaTeX
 \begin{abstract}
-Possibilistic c-means (PCM) based clustering algorithms are widely used in the literature. In this paper, we develop a noise level based PCM (NPCM) clustering algorithm. NPCM needs two kinds of information to specify for the clustering task, i.e., information of the cluster number and information of the property of clusters. More specifically, there are two parameters in NPCM where $m_{ini}$ is a possibly over-specified cluster number, and $\alpha$ characterizes the closeness of clusters in the clustering result. Furthermore, we find that the update of $\eta_j$ in adaptive PCM (APCM) is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, which leads to a faster convergence rate. Experiments show that the clustering result is not sensitive to the choosing of $\alpha$ unless there are overlapped clusters in the dataset.
+Possibilistic c-means (PCM) based clustering algorithms are widely used in the literature. In this paper, we develop a noise level based PCM (NPCM) clustering algorithm. NPCM needs two kinds of information to specify for the clustering task, i.e., information of the cluster number and information of the property of clusters. More specifically, there are two parameters in NPCM where $m_{ini}$ is a possibly over-specified cluster number, and $\alpha$ characterizes the closeness of clusters in the clustering result. Both parameters are not required to be exactly specified. Furthermore, we find that the update of $\eta_j$ in adaptive PCM (APCM) is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, which leads to a faster convergence rate.
+Experiments show that the clustering process can be effectively controlled by $m_{ini}$ and $\alpha$.
 \end{abstract}
 #+END_LaTeX 
 ** Introduction
@@ -53,7 +54,7 @@ In the unified framework (UPCM) \cite{hou_pcm_2016} of PCM and APCM, the cluster
 The resulted algorithm is called the noise level based PCM (NPCM) clustering algorithm.
 
 *Our Contributions:*
-There are two parameters in NPCM: $m_{ini}$ is a possibly over-specified cluster number, and $\alpha$ characterizes the closeness of clusters in the clustering result.
+There are two parameters in NPCM: $m_{ini}$ is a possibly over-specified cluster number, and $\alpha$ characterizes the closeness of clusters in the clustering result. Both parameters are not required to be exactly specified.
 Furthermore, we find that the update of $\eta_j$ is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, which leads to a faster convenience rate.
 In addition, we address the background noise cluster problem encountered in APCM and UPCM to increase the algorithms' robustness in noisy environments.
 
