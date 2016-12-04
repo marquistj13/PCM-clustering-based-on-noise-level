@@ -40,10 +40,7 @@ if __name__ == '__main__':
     ax = fig2.gca()
     ax.grid(True)
     # 0.1,0.3,0.5
-<<<<<<< HEAD
     n_cluster, alpha_cut = 10, 0.3
-=======
->>>>>>> f5cb2827217aa864be72d99d8f1fbc450fb3773f
     ini_save_name = r".\video\iris_ini.png"
     last_frame_name = r'.\video\iris_last_frame_n_%d_alpha_0_%d.png' % (
         n_cluster, alpha_cut * 10)
