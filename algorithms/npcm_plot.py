@@ -133,7 +133,11 @@ class npcm_plot():
         density_list = []  # store density each cluster
         for index in range(self.m):
             no_of_pnts = np.sum(labels == index)
-            density = no_of_pnts / np.power(ita[index], np.shape(self.x)[1])
+            # if np.isclose(ita[index], 0):
+            if no_of_pnts == 1:  # if there is only one point in the cluster, ita[index] would be close to 0
+                density = 0
+            else:
+                density = no_of_pnts / np.power(ita[index], np.shape(self.x)[1])
             density_list.append(density)
         index_delete = []  # store the cluster index to be deleted
         p = 0
