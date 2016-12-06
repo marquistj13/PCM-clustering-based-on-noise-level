@@ -14,12 +14,14 @@ import os
 
 x_lim = (3, 9)
 y_lim = (1.5, 5)
+# x_lim = (0, 1)
+# y_lim = (0, 1)
 
 if __name__ == '__main__':
     # X, y = _generateFig()
     # np.savez(r".\video\example_close_cluster_data", X=X, y=y)
     iris = load_iris()
-    X, y = iris.data, iris.target
+    X, y = iris.data[2:], iris.target[2:]
     marker_size = 4
     dpi = 90
     fig_size = (8, 8)
@@ -40,7 +42,7 @@ if __name__ == '__main__':
     ax = fig2.gca()
     ax.grid(True)
     # 0.1,0.3,0.5
-    n_cluster, alpha_cut = 10, 0.3
+    n_cluster, alpha_cut = 10, 0.2
     ini_save_name = r".\video\iris_ini.png"
     last_frame_name = r'.\video\iris_last_frame_n_%d_alpha_0_%d.png' % (
         n_cluster, alpha_cut * 10)
