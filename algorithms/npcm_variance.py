@@ -132,11 +132,20 @@ class npcm_variance():
         plt.savefig(self.ini_save_name, dpi=fig.dpi, bbox_inches='tight')
         plt.close("KMeans_init")
 
+        # cov_mat = []
+        # for label in range(self.m):
+        #     vects = self.x[labels == label] - self.theta[label]
+        #     cov_mat_tmp = np.dot(vects.T, vects) / len(vects)
+        #     cov_mat.append(cov_mat_tmp)
+        # self.cov_mat = cov_mat
+        # covariance matrix
+        # fit a Minimum Covariance Determinant (MCD) robust estimator to data
+        # see http://scikit-learn.org/stable/auto_examples/covariance/plot_mahalanobis_distances.html
+        robust_cov = MinCovDet()
         cov_mat = []
         for label in range(self.m):
-            vects = self.x[labels == label] - self.theta[label]
-            cov_mat_tmp = np.dot(vects.T, vects) / len(vects)
-            cov_mat.append(cov_mat_tmp)
+            robust_cov.fit(self.x[labels == label])
+            cov_mat.append(robust_cov.covariance_)
         self.cov_mat = cov_mat
 
         # eliminate noise clusters
@@ -243,9 +252,10 @@ class npcm_variance():
         # update covariance matrix
         cov_mat = []
         for label in range(self.m):
-            vects = self.x[labels == label] - self.theta[label]
-            cov_mat_tmp = np.dot(vects.T, vects) / len(vects)
-            cov_mat.append(cov_mat_tmp)
+            vects = (self.x - self.theta[label]) * np.sqrt(self.u[:, label])[:, np.newaxis]
+            cov_mat_tmp = np.dot(vects.T, vects) / self.u[:, label].sum()
+            cov_mat_tmp = np.power(abs(np.linalg.det(cov_mat_tmp)), -1.0 / self.d) * cov_mat_tmp
+            cov_mat.append(np.linalg.pinv(cov_mat_tmp))
         self.cov_mat = cov_mat
         # robust_cov = MinCovDet()
         # cov_mat = []
