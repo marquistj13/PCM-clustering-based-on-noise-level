@@ -5,6 +5,7 @@ from upcm import upcm
 from npcm_etaWithoutControl import npcm_eta_zero
 from npcm_plot_without_background_noise_handle import npcm_without_handle_backnoise
 from npcm_plot import npcm_plot
+from npcm_variance import npcm_variance
 
 # log setup
 logger = logging.getLogger('algorithm')
