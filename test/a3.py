@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from sklearn.datasets import load_iris
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from algorithms import npcm_variance
+from algorithms import npcm_plot
+from sklearn.datasets import make_blobs
 
 colors = ['c', 'orange', 'g', 'r', 'b', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
 plt.style.use('classic')
@@ -12,16 +12,20 @@ from moviepy.video.io.ffmpeg_reader import FFMPEG_VideoReader
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
 import os
 
-x_lim = (3, 9)
-y_lim = (1.5, 5)
-# x_lim = (0, 1)
-# y_lim = (0, 1)
+x_lim = (0, 70000)
+y_lim = (0, 65000)
 
 if __name__ == '__main__':
     # X, y = _generateFig()
     # np.savez(r".\video\example_close_cluster_data", X=X, y=y)
-    iris = load_iris()
-    X, y = iris.data[2:], iris.target[2:]
+    # tmp_file = np.load(r".\video\example_close_cluster_data.npz")
+    # X, y = tmp_file['X'], tmp_file['y']
+    X=np.loadtxt("a3.txt") # dataset from https://cs.joensuu.fi/sipu/datasets/a3.txt
+    # Synthetic 2-d data with varying number of vectors (N) and clusters (M). There are 150 vectors per cluster.
+    y=np.zeros(len(X))
+    for i in xrange(len(X)/150):
+        y[i*150:(i+1)*150]+=i
+
     marker_size = 4
     dpi = 90
     fig_size = (8, 8)
@@ -29,26 +33,26 @@ if __name__ == '__main__':
     fig1 = plt.figure(figsize=fig_size, dpi=dpi, num=1)
     ax_fig1 = fig1.gca()
     ax_fig1.grid(True)
-    for label in range(3):
+    for label in range(50):
         ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], '.',
                      color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
     ax_fig1.set_xlim(x_lim)
     ax_fig1.set_ylim(y_lim)
     lg = ax_fig1.legend(loc='upper left', fancybox=True, framealpha=0.5, prop={'size': 8})
     # ax_fig1.set_title("Original Dataset")
-    plt.savefig(r".\video\iris_ori.png", dpi=dpi, bbox_inches='tight')
+    plt.savefig(r".\video\a3_ori.png", dpi=dpi, bbox_inches='tight')
     # plot animation and save
     fig2 = plt.figure(figsize=fig_size, dpi=dpi, num=2)
     ax = fig2.gca()
     ax.grid(True)
     # 0.1,0.3,0.5
-    n_cluster, alpha_cut = 10, 0.
-    ini_save_name = r".\video\iris_ini.png"
-    last_frame_name = r'.\video\iris_last_frame_n_%d_alpha_0_%d.png' % (
+    n_cluster, alpha_cut = 50, 0.2
+    ini_save_name = r".\video\a3_ini.png"
+    last_frame_name = r'.\video\a3_last_frame_n_%d_alpha_0_%d.png' % (
         n_cluster, alpha_cut * 10)
-    tmp_video_name = r'.\video\siris_n_%d_alpha_%.1f_tmp.mp4' % (n_cluster, alpha_cut)
-    video_save_newFps_name = r'.\video\iris_n_%d_alpha_%.1f.mp4' % (n_cluster, alpha_cut)
-    clf = npcm_variance(X, n_cluster, ax=ax, x_lim=(x_lim), y_lim=(y_lim), alpha_cut=alpha_cut,
+    tmp_video_name = r'.\video\sa3_n_%d_alpha_%.1f_tmp.mp4' % (n_cluster, alpha_cut)
+    video_save_newFps_name = r'.\video\a3_n_%d_alpha_%.1f.mp4' % (n_cluster, alpha_cut)
+    clf = npcm_plot(X, n_cluster, ax=ax, x_lim=(x_lim), y_lim=(y_lim), alpha_cut=alpha_cut,
                     ini_save_name=ini_save_name, last_frame_name=last_frame_name, save_figsize=fig_size)
 
     anim = animation.FuncAnimation(fig2, clf, frames=clf.fit,
