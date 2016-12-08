@@ -108,10 +108,12 @@ class npcm_eta_zero():
         # plot the fcm initialization result
         fig = plt.figure("KMeans_init", dpi=300, figsize=self.save_figsize)
         ax = fig.gca()
+        bbox_props = dict(boxstyle="circle,pad=0.1", fc='w', ec="k", lw=2, alpha=0.7)
         for label in range(self.m):
             ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], linestyle='None',
                     marker=markers[label], color=colors[label])
-            ax.text(self.theta[label][0], self.theta[label][1], "%d" % label, size='xx-large')
+            ax.text(self.theta[label][0], self.theta[label][1], "%d" % label, size='xx-large', ha="center", va="center",
+                    bbox=bbox_props)
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
         ax.grid(True)
@@ -158,8 +160,9 @@ class npcm_eta_zero():
             tmp_sig_vj = 0.2 * self.ita[cntr_index] / np.sqrt(-np.log(self.alpha_cut))
             # tmp_sig_vj = 1
             # caculate the d_\alpha of each cluster, i.e., the outer bandwidth circle
-            tmp_ita_alpha = np.sqrt(-np.log(self.alpha_cut)) * (self.ita[cntr_index] + np.sqrt(-np.log(self.alpha_cut))
-                                                                * tmp_sig_vj)
+            tmp_ita_alpha = np.sqrt(-np.log(self.alpha_cut)) * (
+                self.ita[cntr_index] + np.sqrt(-np.log(self.alpha_cut))
+                * tmp_sig_vj)
             tmp_ita_ori = np.sqrt(-np.log(self.alpha_cut)) * self.ita[cntr_index]
             self.ita_alpha_sigmaV.append(tmp_ita_alpha)
             self.ita_alpha_ori.append(tmp_ita_ori)
@@ -173,7 +176,8 @@ class npcm_eta_zero():
             samples_mask = u[:, cntr_index] >= self.alpha_cut
             if np.any(samples_mask):  # avoid null value for the following calculation
                 self.theta[cntr_index] = np.sum(u[samples_mask][:, cntr_index][:, np.newaxis]
-                                                * self.x[samples_mask], axis=0) / sum(u[samples_mask][:, cntr_index])
+                                                * self.x[samples_mask], axis=0) / sum(
+                    u[samples_mask][:, cntr_index])
         pass
 
     def cluster_elimination(self):
@@ -315,7 +319,8 @@ class npcm_eta_zero():
                 # print label, self.ita[label], len(self.ita)
         else:
             for label, line, line_center, circle, outer_circle in zip(range(self.m), self.lines[:self.m], \
-                                                                      self.line_centers[:self.m], self.circles[:self.m],
+                                                                      self.line_centers[:self.m],
+                                                                      self.circles[:self.m],
                                                                       self.outer_circles[:self.m]):
                 line.set_data(self.x[labels == label][:, 0], self.x[labels == label][:, 1])
                 line_center.set_data(self.theta[label][0], self.theta[label][1])
@@ -324,8 +329,10 @@ class npcm_eta_zero():
                 outer_circle.center = self.theta[label][0], self.theta[label][1]
                 outer_circle.set_radius(self.ita_alpha_sigmaV[label])
                 # self.log.info("Total %d clusters, %d th bandwidth %f" % (len(self.ita), label, self.ita[label]))
-            for label, line, line_center, circle, outer_circle in zip(range(self.m, self.m_ori), self.lines[self.m:],
-                                                                      self.line_centers[self.m:], self.circles[self.m:],
+            for label, line, line_center, circle, outer_circle in zip(range(self.m, self.m_ori),
+                                                                      self.lines[self.m:],
+                                                                      self.line_centers[self.m:],
+                                                                      self.circles[self.m:],
                                                                       self.outer_circles[self.m:]):
                 line.set_data([], [])
                 line_center.set_data([], [])

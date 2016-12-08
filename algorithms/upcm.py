@@ -95,10 +95,12 @@ class upcm():
 
         # plot the fcm initialization result
         fig, ax = plt.subplots(figsize=(7, 3.5), dpi=300)  # assume 2-d data
+        bbox_props = dict(boxstyle="circle,pad=0.1", fc='w', ec="k", lw=2, alpha=0.7)
         for label in range(self.m):
             ax.plot(self.x[labels == label][:, 0], self.x[labels == label][:, 1], linestyle='None',
                     marker=markers[label], color=colors[label])
-            ax.text(self.theta[label][0], self.theta[label][1], "%d" % label, size='xx-large')
+            ax.text(self.theta[label][0], self.theta[label][1], "%d" % label, size='xx-large', ha="center", va="center",
+                    bbox=bbox_props)
         ax.set_xlim(self.x_lim)
         ax.set_ylim(self.y_lim)
         ax.grid(True)
