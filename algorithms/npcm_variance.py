@@ -355,7 +355,7 @@ class npcm_variance():
             theta_ori = self.theta.copy()
             self.update_u_theta()
             self.cluster_elimination()
-            self.adapt_ita()
+            # self.adapt_ita()
             # Next is the termination test. We include the case where the current result is same with
             # the previous previous one, i.e., x[t] is same with x[t-2]
             # Note that, the time ordering is: theta_pre > theta_ori > self.theta
