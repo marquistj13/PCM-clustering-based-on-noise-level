@@ -265,7 +265,8 @@ class npcm_plot():
         tmp_text = "Iteration times:%2d\n" % p
         tmp_text += r"$\alpha={:.2f}$".format(self.alpha_cut) + "\n"
         tmp_text += "Initial    number:%2d\nCurrent number:%2d" % (self.m_ori, self.m)
-        ax.text(0.02, 0.75, tmp_text, transform=ax.transAxes)
+        # ax.text(0.02, 0.75, tmp_text, transform=ax.transAxes)
+        ax.text(0.02, 0.7, tmp_text, transform=ax.transAxes) # Modified for example/example_close_cluster.py
         # ax.set_title("Clustering Finished")
         labels = np.argmax(self.u, axis=1)
         for label in range(self.m):

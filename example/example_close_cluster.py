@@ -6,7 +6,7 @@ from algorithms import npcm_plot
 from sklearn.datasets import make_blobs
 
 colors = ['orange', 'b', 'g', 'r', 'c', 'm', 'y', 'k', 'Brown', 'ForestGreen'] * 30
-markers = ['+', 'x', 'p', '.', 'o', '8', 'p', 'd', '*', '2', 'h'] * 30
+markers = ['+', 'x', '.', 'p', 'o', '8', 'p', 'd', '*', '2', 'h'] * 30
 plt.style.use('classic')
 
 from moviepy.video.io.ffmpeg_reader import FFMPEG_VideoReader
@@ -14,7 +14,7 @@ from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
 import os
 
 x_lim = (0.7, 3)
-y_lim = (0.8, 3.1)
+y_lim = (0.85, 3.1)
 
 
 def _generateFig():
@@ -26,8 +26,14 @@ def _generateFig():
     x0, y0 = make_blobs(n_samples=400, n_features=2, centers=[[2.25, 1.5]], cluster_std=0.2, random_state=45)
     x1, y1 = make_blobs(n_samples=400, n_features=2, centers=[[1.9, 1.9]], cluster_std=0.2, random_state=45)
     y1 += 1
+    noise_x = np.random.uniform(0.7, 2.5, size=100)
+    noise_y = np.random.uniform(1, 3, size=100)
+    noise = np.r_['1,2,0', noise_x, noise_y]
+    noise_label = np.zeros((len(noise))) + 2
     X = np.vstack((x0, x1))
     y = np.hstack((y0, y1))
+    X = np.vstack((X, noise))
+    y = np.hstack((y, noise_label))
     # # Visualize the test data
     # fig0, ax = plt.subplots()
     # for label in range(3):
@@ -49,25 +55,33 @@ if __name__ == '__main__':
     X, y = tmp_file['X'], tmp_file['y']
     marker_size = 4
     dpi = 300
-    fig_size = (3.5, 3.5)
+    fig_size = (3, 3)
     # plot ori data and save
     fig1 = plt.figure(figsize=fig_size, dpi=dpi, num=1)
     ax_fig1 = fig1.gca()
     ax_fig1.grid(True)
-    for label in range(2):
-        ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], linestyle='None', marker=markers[label],
-                     color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
+    for label in range(3):
+        if label < 2:
+            ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], linestyle='None', marker=markers[label], zorder=2,
+                         color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
+        else:  # Do not show the label for the noise cluster
+            ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], linestyle='None', marker=markers[label], zorder=1,
+                         color=colors[label], markersize=marker_size, label="Noise")
+    # for label in range(3):
+    #     ax_fig1.plot(X[y == label][:, 0], X[y == label][:, 1], linestyle='None', marker=markers[label],
+    #                  color=colors[label], markersize=marker_size, label="Cluster %d" % (label + 1))
+
     ax_fig1.set_xlim(x_lim)
     ax_fig1.set_ylim(y_lim)
-    lg = ax_fig1.legend(loc='upper left', fancybox=True, framealpha=0.5, prop={'size': 8})
+    lg = ax_fig1.legend(loc='upper left', fancybox=True, framealpha=0.8, prop={'size': 8})
     # ax_fig1.set_title("Original Dataset")
     plt.savefig(r"..\paper\img\example_close_cluster_ori.png", dpi=dpi, bbox_inches='tight')
     # plot animation and save
     fig2 = plt.figure(figsize=fig_size, dpi=dpi, num=2)
     ax = fig2.gca()
     ax.grid(True)
-    # 0.1,0.3,0.5
-    n_cluster, alpha_cut = 10, 0.1
+    # 0.2,0.3,0.4,0.5,0.6
+    n_cluster, alpha_cut = 10, 0.6
     ini_save_name = r".\video\example_close_cluster_ini.png"
     last_frame_name = r'..\paper\img\example_close_cluster_last_frame_n_%d_alpha_0_%d.png' % (
         n_cluster, alpha_cut * 10)
