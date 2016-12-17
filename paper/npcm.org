@@ -340,7 +340,7 @@ The closeness of clusters in the clustering result shows a smooth transition con
     {\includegraphics[width=0.33\textwidth]{img/example_close_cluster_last_frame_n_10_alpha_0_5.png}\label{fig_sub_close_0_5}}
    \subfloat[]
     {\includegraphics[width=0.33\textwidth]{img/example_close_cluster_last_frame_n_10_alpha_0_6.png}\label{fig_sub_close_0_6}}
-\caption{(a) Dataset of Experiment 2. The clustering result of NPCM with $m_{ini}=10$, (b) $\alpha=0.2$, (c) $\alpha=0.3$, and (d) $\alpha=0.4$, (e) $\alpha=0.5$, (f) $\alpha=0.6$.
+\caption{(a) Dataset of Experiment 2. The clustering result of NPCM with $m_{ini}=10$, (b) $\alpha=0.2$, (c) $\alpha=0.3$, (d) $\alpha=0.4$, (e) $\alpha=0.5$, and (f) $\alpha=0.6$.
 The radius of each circle is of the same meaning as in Fig.\ref{fig_small_cluster}. The two overlapped physical clusters suggest a high noise level $\alpha$ to be specified. The closeness of clusters in the clustering result shows a smooth transition controlled by $\alpha$.}
 \label{fig_close_cluster}
 \end{figure*}
@@ -349,7 +349,7 @@ The radius of each circle is of the same meaning as in Fig.\ref{fig_small_cluste
 In summary, the parameter $\alpha$ should be chosen to properly characterize the closeness of clusters in the dataset. Specifically, if we specify a low noise level, e.g., in Experiment 2, $\alpha=0.2$, but the true noise level of the physical clusters is higher (i.e., they are closer to each other than we think), then NPCM would treat them as one cluster and the clusters merge; in Experiment 1, there are no overlapped clusters, and we can set an arbitrary $\alpha$.
 However, as pointed out in UPCM, each physical cluster can be seen as noise to other physical clusters. So we should specify a large noise level $\alpha$ in order to robustly characterize the closeness of clusters in the dataset (i.e., noise level of the dataset).
 ** Conclusion
-In this paper, we develop a noise level based PCM clustering algorithm (NPCM). Specifically, NPCM addresses the background noise cluster problem encountered in APCM and UPCM and exploit the intuition from UPCM to eliminate the parameter $\sigma_v$ based on $\eta_j$.
+In this paper, we develop a noise level based PCM clustering algorithm (NPCM). Specifically, NPCM addresses the background noise cluster problem encountered in APCM and UPCM and exploit the intuition from UPCM to eliminate the parameter $\sigma_v$ basing on $\eta_j$.
 There are two parameters in NPCM: $m_{ini}$ is a possibly over-specified number of clusters to ensure that there is at least one cluster placed near each physical cluster in the initial partition, and $\alpha$ characterizes the closeness of clusters in the clustering result.
 The advantage of NPCM is that the parameter $\alpha$ is intuitive to choose and NPCM does not need strong prior information (e.g., the exact cluster number or the exact closeness of clusters) of the dataset.
 Furthermore, we find that the update of $\eta_j$ is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, and a direct consequence of this fact is that NPCM has a faster convergence rate. 

@@ -1,4 +1,4 @@
-% Created 2016-12-16 周五 15:13
+% Created 2016-12-17 周六 10:17
 \documentclass[conference]{IEEEtran}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -161,7 +161,7 @@ Second, as stated in the motivations, the background noise clusters in the initi
 \label{npcm_density}
 \rho_j=\frac{n_j}{\eta_j^d}
 \end{equation}
-where $d$ is the dimension of $\mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cluster $C_j$ is a noise cluster and is eliminated if $\rho_j<0.1\rho_0$. For the case of Fig.\ref{fig_sub_noise_ini}, clusters $5$, $6$, $7$, and $8$ will be eliminated.
+where $d$ is the dimension of $\mathbf{x}_i$. Let $\rho_0=\max_j\rho_j$. Then cluster $C_j$ is considered as a noise cluster and is eliminated if $\rho_j<0.1\rho_0$. For the case of Fig.\ref{fig_sub_noise_ini}, clusters $5$, $6$, $7$, and $8$ will be eliminated.
 \subsection{Modeling the Relation Between $\alpha$ and $\sigma_v$}
 \label{sec-3-3}
 In UPCM, the noise level parameter $\alpha$ is introduced to reduce the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update. Specifically, $\alpha$ measures the closeness of two cluster prototypes in the clustering result. When a large $\alpha$ is specified, we consider that there may be clusters very close to each other, and the $\eta_j$ estimated in this case may be very uncertain. With the above interpretation of $\alpha$, the interplay between $\alpha$ and $\sigma_v$ becomes simple and intuitive, i.e., a large specification of noise level $\alpha$ means that few points (that we consider as good points) actually contribute to the adaption of prototype $\boldsymbol{\theta}_j$, so we should specify a large $\sigma_v$ to give the clusters in one physical cluster more mobility
@@ -309,7 +309,7 @@ The closeness of clusters in the clustering result shows a smooth transition con
     {\includegraphics[width=0.33\textwidth]{img/example_close_cluster_last_frame_n_10_alpha_0_5.png}\label{fig_sub_close_0_5}}
    \subfloat[]
     {\includegraphics[width=0.33\textwidth]{img/example_close_cluster_last_frame_n_10_alpha_0_6.png}\label{fig_sub_close_0_6}}
-\caption{(a) Dataset of Experiment 2. The clustering result of NPCM with $m_{ini}=10$, (b) $\alpha=0.2$, (c) $\alpha=0.3$, and (d) $\alpha=0.4$, (e) $\alpha=0.5$, (f) $\alpha=0.6$.
+\caption{(a) Dataset of Experiment 2. The clustering result of NPCM with $m_{ini}=10$, (b) $\alpha=0.2$, (c) $\alpha=0.3$, (d) $\alpha=0.4$, (e) $\alpha=0.5$, and (f) $\alpha=0.6$.
 The radius of each circle is of the same meaning as in Fig.\ref{fig_small_cluster}. The two overlapped physical clusters suggest a high noise level $\alpha$ to be specified. The closeness of clusters in the clustering result shows a smooth transition controlled by $\alpha$.}
 \label{fig_close_cluster}
 \end{figure*}
@@ -318,7 +318,7 @@ In summary, the parameter $\alpha$ should be chosen to properly characterize the
 However, as pointed out in UPCM, each physical cluster can be seen as noise to other physical clusters. So we should specify a large noise level $\alpha$ in order to robustly characterize the closeness of clusters in the dataset (i.e., noise level of the dataset).
 \section{Conclusion}
 \label{sec-5}
-In this paper, we develop a noise level based PCM clustering algorithm (NPCM). Specifically, NPCM addresses the background noise cluster problem encountered in APCM and UPCM and exploit the intuition from UPCM to eliminate the parameter $\sigma_v$ based on $\eta_j$.
+In this paper, we develop a noise level based PCM clustering algorithm (NPCM). Specifically, NPCM addresses the background noise cluster problem encountered in APCM and UPCM and exploit the intuition from UPCM to eliminate the parameter $\sigma_v$ basing on $\eta_j$.
 There are two parameters in NPCM: $m_{ini}$ is a possibly over-specified number of clusters to ensure that there is at least one cluster placed near each physical cluster in the initial partition, and $\alpha$ characterizes the closeness of clusters in the clustering result.
 The advantage of NPCM is that the parameter $\alpha$ is intuitive to choose and NPCM does not need strong prior information (e.g., the exact cluster number or the exact closeness of clusters) of the dataset.
 Furthermore, we find that the update of $\eta_j$ is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, and a direct consequence of this fact is that NPCM has a faster convergence rate. 
