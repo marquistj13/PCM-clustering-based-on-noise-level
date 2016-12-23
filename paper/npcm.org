@@ -129,7 +129,7 @@ The unified framework (UPCM \cite{hou_pcm_2016}) of PCM and APCM utilizes the co
 \end{equation}
 #+END_LaTeX
 where $\gamma_j=\left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+4\sigma_vd_{ij}}\right)^2$ and $d_{ij}=||\mathbf{x}_i-\boldsymbol{\theta}_j||$.
-The bandwidth correction of \eqref{upcm_u_update} is more natural and flexible than that of that of \eqref{corrected_eta}.
+The bandwidth correction of \eqref{upcm_u_update} is more natural and flexible than that of \eqref{corrected_eta}.
 Another feature of UPCM is that UPCM introduces the concept of /noise level/ $\alpha$ of the data set in the update equation of prototypes:
 #+BEGIN_LaTeX
 \begin{equation}
@@ -144,7 +144,7 @@ In this section, we first present motivations of proposed noise level based PCM 
 There are two needs originated from APCM and UPCM to be addressed.
 1. The performance of clustering algorithms should be robust to background noise. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise clusters are highly possible to become very large. Therefore, the physical clusters can't be correctly discovered. See Fig.\ref{fig_background_noise} for illustration. In this case, clusters $5$, $6$, $7$, and $8$ merge into one cluster with bandwidth larger than the physical clusters, and then moves to the dense data region.
 2. The clustering algorithms should have as less parameters as possible, and the parameters should be intuitive to choose. This requirement is based on the fact that choosing parameters requires prior information of the dataset and we often have little prior knowledge for the clustering task.
-   APCM exerts strong control over the bandwidth correction process, i.e., the estimated bandwidth is directly scaled by the user-specified parameter $\alpha$ which is difficult to choose basing on intuition. In order to correct the bandwidth in a more fuzzy way, UPCM introduces an uncertainty parameter $\sigma_v$ to regulate the shape of the membership function. However, choosing $\sigma_v$ depends on the noise level parameter $\alpha$. The experiments in \cite{hou_pcm_2016} suggest that a small $\alpha$ should correspond to a small $\sigma_v$, and a large $\alpha$ to a large $\sigma_v$. Therefore, we can exploit this intuition to cancel out the parameter $\sigma_v$.
+   APCM exerts strong control over the bandwidth correction process, i.e., the estimated bandwidth is directly scaled by the user-specified parameter $\alpha$ which is difficult to choose basing on intuition. In order to correct the bandwidth in a more fuzzy way, UPCM introduces an uncertainty parameter $\sigma_v$ to regulate the shape of the membership function. However, choosing $\sigma_v$ depends on the noise level parameter $\alpha$. The experiments in \cite{hou_pcm_2016} suggest that a small $\alpha$ should correspond to a small $\sigma_v$, and a large $\alpha$ should correspond to a large $\sigma_v$. Therefore, we can exploit this intuition to cancel out the parameter $\sigma_v$.
 #+BEGIN_LaTeX
 \begin{figure}[tb]
 \captionsetup[subfloat]{farskip=1pt,captionskip=1pt}% use this to reduce space between rows of subfloats, or between subfloat and the caption
@@ -159,8 +159,8 @@ There are two needs originated from APCM and UPCM to be addressed.
 \end{figure}
 #+END_LaTeX
 *** Initialization in NPCM
-There are two issues with the initialization of NPCM. First, as in APCM and UPCM, NPCM needs an over-specified number of clusters $m_{ini}$ of the true number of clusters $m$. In the initial partition of the dataset, there should be at least one cluster placed near each physical cluster. 
-It's shown in \cite{panda_comparing_2012} that K-Means is faster than FCM. Therefore, we choose K-Means to get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points $\mathbf{x}_i$ that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
+There are two issues with the initialization of NPCM. First, as in APCM and UPCM, NPCM needs an over-specified cluster number $m_{ini}$ of the true cluster number $m$. In the initial partition of the dataset, there should be at least one cluster placed near each physical cluster. 
+It's shown in \cite{panda_comparing_2012} that K-Means is faster than FCM. Therefore, we choose K-Means to get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
 #+BEGIN_LaTeX
 \begin{IEEEeqnarray}{ll}
 \boldsymbol{\theta}_j &= \frac{\Sigma_{i}\mathbf{x}_i}{n_j}  \quad \text{for}\;\mathbf{x}_i \in A_j^{ini} \label{npcm_ini_theta}, \\
@@ -182,7 +182,7 @@ In UPCM, the noise level parameter $\alpha$ is introduced to reduce the influenc
 #+END_LaTeX
  to merge; on the other hand, a small specification of $\alpha$ means that we are less uncertain about the estimated bandwidth, and more points are contributed to the adaption of $\boldsymbol{\theta}_j$, therefore, we should also specify a small $\sigma_v$ \cite{hou_pcm_2016}. 
 
-Before proceeding, we take a look at the the role of $\sigma_v$ in the clustering process of UPCM. UPCM exploits the conditional fuzzy set to incorporate the uncertainty of the estimated bandwidth. As can be seen from \eqref{upcm_u_update}, the actual bandwidth of the membership function $u_{ij}$ varies according to $\sigma_v$ and $d_{ij}$. In other words, the shape of the membership function becomes flatter when $\sigma_v$ or $d_{ij}$ increases. Note that a larger bandwidth corresponds to a flatter membership curve. This observation suggests that the bandwidth itself can indicate the uncertainty of the estimated bandwidth, i.e., a large estimated bandwidth should correspond to a large $\sigma_v$. We will see that the formulation of NPCM meets this requirement.
+Before proceeding, we take a look at the role of $\sigma_v$ in the clustering process of UPCM. UPCM exploits the conditional fuzzy set to incorporate the uncertainty of the estimated bandwidth. As can be seen from \eqref{upcm_u_update}, the actual bandwidth of the membership function $u_{ij}$ varies with $\sigma_v$ and $d_{ij}$. In other words, the shape of the membership function becomes flatter when $\sigma_v$ or $d_{ij}$ increases. Note that a larger bandwidth corresponds to a flatter membership curve. This observation suggests that the bandwidth itself can indicate the uncertainty of the estimated bandwidth, i.e., a large estimated bandwidth should correspond to a large $\sigma_v$. We will see that the formulation of NPCM meets this requirement.
 
 From \eqref{upcm_u_update}, we can calculate the distance $d_{j\alpha}$ beyond which a point can't be used to contribute to the adaption of cluster $C_j$ by letting
 #+BEGIN_LaTeX
@@ -211,8 +211,11 @@ which leads to
 \sigma_v=\beta\frac{\eta_j}{\sqrt{-\ln\alpha}}.
 \end{equation}
 #+END_LaTeX
-where $\beta$ characterizes the correction degree.  In this paper, we choose $\beta=0.2$. The rationale is that $d_{j\alpha}$ functions as the distance threshold above which a point can be used to update $\boldsymbol{\theta}_j$ and $\beta$ reflects the effect of the estimated bandwidth uncertainty $\sigma_v$. Therefore, a large $\beta$ means more mobility of each cluster, and $\beta$ should be small when the noise level of the dataset is high (e.g. when two clusters with very different variances are located very close to each other, or when two clusters overlap).
-From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$. The update of the membership function is modified according to \eqref{upcm_u_update} and \eqref{npcm_sig_alpha_relation} as:
+where $\beta$ characterizes the correction degree.  In this paper, we choose $\beta=0.2$.
+The rationale is that $\beta$ reflects the effect of $\sigma_v$ and a larger $\beta$ means more mobility of each cluster.
+Therefore, $\beta$ should be small in order for the algorithm to behave well in noisy environments (e.g. when two clusters with very different variances are located very close to each other, or when two clusters overlap).
+
+From \eqref{npcm_sig_alpha_relation}, we can see that the cluster with large $\eta_j$ has a large bandwidth estimation uncertainty $\sigma_v$. The update of the membership function is then modified according to \eqref{upcm_u_update} and \eqref{npcm_sig_alpha_relation} as:
 #+BEGIN_LaTeX
 \begin{equation}
 \label{npcm_u_update}
@@ -229,7 +232,7 @@ The difference between NPCM and the previous algorithms (i.e., APCM and UPCM) is
 #+BEGIN_LaTeX
 \footnote{For the same $\eta_j$, a larger $\sigma_v$ means that the point $\mathbf{x}_i$ with distance $d_{ij}$ to cluster $C_j$ now has a larger $u_{ij}$, which can be seen from \eqref{upcm_u_update}. As a result, $\mathbf{x}_i$ with large $d_{ij}$ can be more compatible to cluster $C_j$ in the next iteration, therefore, the adjustment of $\eta_j$ between successive iterations becomes larger. In this sense, we say that the positive feedback process is stronger.} 
 #+END_LaTeX
-because $\sigma_v$ increases with $\eta_j$ (see \eqref{npcm_sig_alpha_relation}). A direct consequence of this fact is that NPCM has a faster convergence rate (see Proposition \ref{prop_eliminate} in the Appendix).
+because $\sigma_v$ increases with $\eta_j$ (see \eqref{npcm_sig_alpha_relation}). A direct consequence of this fact is that NPCM has /a faster convergence rate/ (see Proposition \ref{prop_eliminate} in the Appendix).
 However, this benefit comes at a price: the adaption of each $\eta_j$ should be further controlled to ensure that $\eta_j$ can be correctly estimated to represent the physical cluster and the above positive feedback process can stop at the right time. Otherwise, the underlying structures wouldn't be correctly discovered.
 More specifically, there can be situations where cluster $C_j$ becomes unexpectedly large for two reasons. First, points of background noise clusters are allowed to contribute to the adaption of $\eta_j$. Second, boundary points between $C_j$ and other clusters gradually become more compatible to $C_j$ due to the positive feedback process. As a result, $\eta_k$ of the nearby smaller cluster $C_k$ is dramatically under-estimated. See Fig.\ref{fig_eta} for illustration of this problem.
 #+BEGIN_LaTeX
