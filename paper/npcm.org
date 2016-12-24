@@ -425,7 +425,7 @@ For the points $\mathbf{x}$ that meet $u_1<u_2$, we have
 where $\epsilon\in(0,+\infty)$. Then we get $\|\mathbf{x} - \boldsymbol{\theta}_1\|^2 > k'\|\mathbf{x} - \boldsymbol{\theta}_2\|^2$, and we have after some algebra
 \begin{equation}
 \label{hypersphere}
-\|\mathbf{x}-\frac{k'\boldsymbol{\theta}_2-\boldsymbol{\theta}_1}{k'-1}\|^2 = \frac{k'}{(k'-1)^2}\|\boldsymbol{\theta}_2-\boldsymbol{\theta}_1\|^2\equiv r^2
+\|\mathbf{x}-\frac{k'\boldsymbol{\theta}_2-\boldsymbol{\theta}_1}{k'-1}\|^2 < \frac{k'}{(k'-1)^2}\|\boldsymbol{\theta}_2-\boldsymbol{\theta}_1\|^2\equiv r^2
 \end{equation}
 
 Utilizing Proposition \ref{prop_fix_stable}, we have that $\boldsymbol{\theta}_1$ and $\boldsymbol{\theta}_2$ converge towards $\mathbf{c}$. Thus, the distance between them decreases towards zero, i.e., 
@@ -440,10 +440,6 @@ Note that $k'$ is larger than the $k$ used in the proof of APCM, therefore, conv
 See the proof of Proposition 2 and Proposition 5 in \cite{xenaki_novel_2016} for details.
 \end{proof}
 #+END_LaTeX
-
-
-
-
 #+BEGIN_LaTeX
 \bibliographystyle{IEEEtran}
 \bibliography{D:/emacs/etc/ZoteroOutput,IEEEabrv}
