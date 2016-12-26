@@ -121,7 +121,7 @@ A related concept is the marginal fuzzy set of $X|V$, denoted as $X$, which is a
 Then the basic philosophy to deal with type-2 fuzziness is to use \eqref{marginal_fs} to "cancel out" the secondary fuzziness $V$ and transform the type-2 problems back to the ordinary type-1 framework. We can explicitly model the uncertainty of the membership caused by some parameter $V$ and "cancel" $V$ to get the type-1 marginal fuzzy set. Then the effect of the uncertainty of $V$ is incorporated into type-1 marginal fuzzy set.
 Illustration for the incorporation of uncertainty can be referred to the example in \cite{hou_pcm_2016}.
 
-The unified framework (UPCM \cite{hou_pcm_2016}) of PCM and APCM utilizes the conditional fuzzy set to incorporate fuzziness (uncertainty) of the estimated bandwidth to the fuzziness of the membership function of points. Specifically, the update of the membership function \eqref{pcm_theta_update} is modified as follows:
+The unified framework (UPCM \cite{hou_pcm_2016}) of PCM and APCM utilizes the conditional fuzzy set to incorporate fuzziness (uncertainty) of the estimated bandwidth to the fuzziness of the membership function of points. Specifically, the update of the membership function \eqref{pcm_u_update} is modified as follows:
 #+BEGIN_LaTeX
 \begin{equation}
 \label{upcm_u_update}
