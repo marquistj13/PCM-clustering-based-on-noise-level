@@ -139,7 +139,7 @@ Another feature of UPCM is that UPCM introduces the concept of /noise level/ $\a
 #+END_LaTeX 
 By setting an appropriate $\alpha$, the influence of points in other clusters $\boldsymbol{\theta}_{i\neq j}$ on the $\boldsymbol{\theta}_j$ update is reduced. This feature allows us to control the closeness of clusters in the clustering result.
 ** Proposed Algorithm
-In this section, we first present motivations of proposed noise level based PCM (NPCM) clustering algorithm, which is developed based on UPCM and APCM. To address the issue of background noise clusters, we propose to eliminate low-density clusters in the initial partition. Then, we cancel out the parameter $\sigma_v$ in UPCM by utilizing the interplay between $\alpha$ and $\sigma_v$. Finally, we analyze the benefit and the problem after adopting the adaptive $\sigma_v$ approach in NPCM, and summarize NPCM in Algorithm \ref{alg:npcm}.
+In this section, we first present motivations of the proposed noise level based PCM (NPCM) clustering algorithm, which is developed based on UPCM and APCM. To address the issue of background noise clusters, we propose to eliminate low-density clusters in the initial partition. Then, we cancel out the parameter $\sigma_v$ in UPCM by utilizing the interplay between $\alpha$ and $\sigma_v$. Finally, we analyze the benefit and the problem after adopting the adaptive $\sigma_v$ approach in NPCM, and summarize NPCM in Algorithm \ref{alg:npcm}.
 *** Motivations
 There are two needs originated from APCM and UPCM to be addressed.
 1. The performance of clustering algorithms should be robust to background noise. We find that both APCM and UPCM suffer from the problem of background noise clusters, i.e., the background noise clusters are highly possible to become very large. Therefore, the physical clusters can't be correctly discovered. See Fig.\ref{fig_background_noise} for illustration. In this case, clusters $5$, $6$, $7$, and $8$ merge into one cluster with bandwidth larger than the physical clusters, and then moves to the dense data region.
@@ -160,7 +160,7 @@ There are two needs originated from APCM and UPCM to be addressed.
 #+END_LaTeX
 *** Initialization in NPCM
 There are two issues with the initialization of NPCM. First, as in APCM and UPCM, NPCM needs an over-specified cluster number $m_{ini}$ of the true cluster number $m$. In the initial partition of the dataset, there should be at least one cluster placed near each physical cluster. 
-It's shown in \cite{panda_comparing_2012} that K-Means is faster than FCM. Therefore, we choose K-Means to get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
+It's shown in \cite{panda_comparing_2012} that K-Means is faster than FCM. Therefore, we choose K-Means to get the initial partitions of the dataset. Let $A_j^{ini}$ be the set of points $\mathbf{x}_i$ that belong to cluster $C_j$ and $n_j$ be the size of $A_j^{ini}$. Then the we set
 #+BEGIN_LaTeX
 \begin{IEEEeqnarray}{ll}
 \boldsymbol{\theta}_j &= \frac{\Sigma_{i}\mathbf{x}_i}{n_j}  \quad \text{for}\;\mathbf{x}_i \in A_j^{ini} \label{npcm_ini_theta}, \\
@@ -236,7 +236,7 @@ because $\sigma_v$ increases with $\eta_j$ (see \eqref{npcm_sig_alpha_relation})
 However, this benefit comes at a price: the adaption of each $\eta_j$ should be further controlled to ensure that $\eta_j$ can be correctly estimated to represent the physical cluster and the above positive feedback process can stop at the right time. Otherwise, the underlying structures wouldn't be correctly discovered.
 More specifically, there can be situations where cluster $C_j$ becomes unexpectedly large for two reasons. First, points of background noise clusters are allowed to contribute to the adaption of $\eta_j$. Second, boundary points between $C_j$ and other clusters gradually become more compatible to $C_j$ due to the positive feedback process. As a result, $\eta_k$ of the nearby smaller cluster $C_k$ is dramatically under-estimated. See Fig.\ref{fig_eta} for illustration of this problem.
 #+BEGIN_LaTeX
-\footnote{UPCM and APCM do not have this problem when noise clusters are eliminated and their parameters are properly chosen because all clusters in UPCM have the same $\sigma_v$ (see \eqref{upcm_u_update}), which ensures that the small cluster can have enough bandwidth to represent the physical cluster, and $\gamma_j\text{s}$ of all clusters in APCM are also confined by an $\alpha$ parameter (see \eqref{corrected_eta}). Therefore, their adjustment of $\eta_j$ between successive iterations is not as large as in NPCM, and the compatibility of boundary points to the clusters do not change very much. This fact also suggests that NPCM should have stronger constraint on the $\eta_j$ update.} 
+\footnote{UPCM and APCM do not have this problem when noise clusters are eliminated and their parameters are properly chosen because all clusters in UPCM have the same $\sigma_v$ (see \eqref{upcm_u_update}), which ensures that the small cluster can have enough bandwidth to represent the physical cluster, and $\gamma_j\text{s}$ of all clusters in APCM are also confined by an $\alpha$ parameter (see \eqref{corrected_eta}). Therefore, their adjustment of $\eta_j$ between successive iterations is not as large as in NPCM, and the compatibility of boundary points to the clusters almost do not change. This fact also suggests that NPCM should have stronger constraint on the $\eta_j$ update.} 
 #+END_LaTeX
 #+BEGIN_LaTeX
 \begin{figure}[tb]
@@ -258,7 +258,7 @@ To solve this problem, we modify the $\eta_j$ update as:
 \eta_j=\frac{1}{n_j}\sum_{\mathbf{x}_i\in A_j}||\mathbf{x}_i-\boldsymbol{\theta}_j|| \quad \text{for}\;u_{ij} \geq \gamma
 \end{equation}
 #+END_LaTeX
-where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}, and $\gamma$ should be small when the noise level of the dataset is high. In this paper, we choose $\gamma=0.01$. The rationale is that, the update process of $\eta_j$ should not be too sensitive to the point $\mathbf{x}_i$ near the boundary of clusters or to noisy points, and by so doing, the iteration times may also be reduced.
+where $A_j$ and $n_j$ have the same meaning as in \eqref{apcm_eta_update}, and $\gamma$ should be small so that $\eta_j$ can be correctly estimated. In this paper, we choose $\gamma=0.01$. The rationale is that, the update process of $\eta_j$ should not be too sensitive to the point $\mathbf{x}_i$ near the boundary of clusters or to noisy points, and by so doing, the iteration times may also be reduced.
 
 From the previous analysis, the NPCM algorithm is summarized in Algorithm \ref{alg:npcm}.
 #+BEGIN_LaTeX
@@ -356,7 +356,7 @@ The radius of each circle is of the same meaning as in Fig.\ref{fig_small_cluste
 In summary, the parameter $\alpha$ should be chosen to properly characterize the closeness of clusters in the dataset. Specifically, if we specify a low noise level, e.g., in Experiment 2, $\alpha=0.2$, but the true noise level of the physical clusters is higher (i.e., they are closer to each other than we think), then NPCM would treat them as one cluster and the clusters merge; in Experiment 1, there are no overlapped clusters, and we can set an arbitrary $\alpha$.
 However, as pointed out in UPCM, each physical cluster can be seen as noise to other physical clusters. Therefore, we should specify a large noise level $\alpha$ in order to robustly characterize the closeness of clusters in the dataset (i.e., noise level of the dataset).
 ** Conclusion
-In this paper, we develop a noise level based PCM clustering algorithm (NPCM). Specifically, NPCM addresses the background noise cluster problem encountered in APCM and UPCM and exploit the intuition from UPCM to eliminate the parameter $\sigma_v$ basing on $\eta_j$.
+In this paper, we develop a noise level based PCM clustering algorithm (NPCM). Specifically, NPCM addresses the background noise cluster problem encountered in APCM and UPCM and exploits the intuition from UPCM to eliminate the parameter $\sigma_v$ basing on $\eta_j$.
 There are two parameters in NPCM: $m_{ini}$ is a possibly over-specified number of clusters to ensure that there is at least one cluster placed near each physical cluster in the initial partition, and $\alpha$ characterizes the closeness of clusters in the clustering result.
 The advantage of NPCM is that the parameter $\alpha$ is intuitive to choose and NPCM does not need strong prior information (e.g., the exact cluster number or the exact closeness of clusters) of the dataset.
 Furthermore, we find that the update of $\eta_j$ in APCM and UPCM is a positive feedback process and the adaptive $\sigma_v$ mechanism adopted in NPCM makes this positive feedback process more stronger, and a direct consequence of this fact is that NPCM has a faster convergence rate. 
@@ -374,8 +374,8 @@ We consider the continuous case where data points are modeled by a random variab
 where $R_j^t=\{\mathbf{x}|u_{j}^t(\mathbf{x}) \geq \alpha\}$,
 #+BEGIN_LaTeX
 \begin{IEEEeqnarray}{ll}
-u_{j}^t(\mathbf{x}) &= \exp\left(\frac{||\mathbf{x}-\boldsymbol{\theta}_j^t||^2}{\gamma_j^t}\right) \\
-\gamma_j^t &= \left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{j}\eta_j/\sqrt{-\ln\alpha}}\right)^2
+u_{j}^t(\mathbf{x}) &= \exp\left(\frac{||\mathbf{x}-\boldsymbol{\theta}_j^t||^2}{\gamma_j^t}\right), \\
+\gamma_j^t &= \left(0.5\eta_{j}+0.5\sqrt{\eta_{j}^{2}+0.8d_{j}\eta_j/\sqrt{-\ln\alpha}}\right)^2,
 \end{IEEEeqnarray}
 #+END_LaTeX
 and 
@@ -415,17 +415,17 @@ Let $\boldsymbol{\theta}_1$, $\boldsymbol{\theta}_2$ be two cluster prototypes w
 \end{prop}
 
 \begin{proof}
- We first calculate the geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{d_j^2(\mathbf{x})}{\gamma_j}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|^2$, $j=1,2$.
+ We first calculate the geometrical locus of the points $\mathbf{x}$ having $u_2(\mathbf{x})>u_1(\mathbf{x})$, where $u_j(\mathbf{x})=\exp\left(-\frac{d_j^2(\mathbf{x})}{\gamma_j}\right)$ and $d_j(\mathbf{x})=\|\mathbf{x} - \boldsymbol{\theta}_j\|$, $j=1, 2$.
 From \eqref{npcm_d_alpha} and \eqref{npcm_sig_alpha_relation}, we get $d_{u_1}=\sqrt{-\ln u_1}\left(\eta_1+\sqrt{-\ln u_1}\sigma_{v_1}\right)=1.2\sqrt{-\ln u_1}\eta_1$ and $d_{u_2}=1.2\sqrt{-\ln u_2}\eta_2$, where we use $u_1$ and $u_2$ to represent $u_1(\mathbf{x})$ and $u_2(\mathbf{x})$ respectively. 
 
 For the points $\mathbf{x}$ that meet $u_1<u_2$, we have 
 \begin{equation*}
 \frac{d_{u_1}}{d_{u_2}}=\frac{1.2\sqrt{-\ln u_1}\eta_1}{1.2\sqrt{-\ln u_2}\eta_2}>\frac{\eta_1}{\eta_2}(1+\epsilon)=k'>\frac{\eta_1}{\eta_2}=k>1
 \end{equation*}
-where $\epsilon\in(0,+\infty)$. Then we get $\|\mathbf{x} - \boldsymbol{\theta}_1\|^2 > k'\|\mathbf{x} - \boldsymbol{\theta}_2\|^2$, and we have after some algebra
+where $\epsilon\in(0,+\infty)$. Then we get $\|\mathbf{x} - \boldsymbol{\theta}_1\| > k'\|\mathbf{x} - \boldsymbol{\theta}_2\|$, and we have after some algebra
 \begin{equation}
 \label{hypersphere}
-\|\mathbf{x}-\frac{k'\boldsymbol{\theta}_2-\boldsymbol{\theta}_1}{k'-1}\|^2 < \frac{k'}{(k'-1)^2}\|\boldsymbol{\theta}_2-\boldsymbol{\theta}_1\|^2\equiv r^2
+\|\mathbf{x}-\frac{k'^2\boldsymbol{\theta}_2-\boldsymbol{\theta}_1}{k'^2-1}\|^2 < \frac{k'^2}{(k'^2-1)^2}\|\boldsymbol{\theta}_2-\boldsymbol{\theta}_1\|^2\equiv r^2
 \end{equation}
 
 Utilizing Proposition \ref{prop_fix_stable}, we have that $\boldsymbol{\theta}_1$ and $\boldsymbol{\theta}_2$ converge towards $\mathbf{c}$. Thus, the distance between them decreases towards zero, i.e., 
@@ -436,7 +436,7 @@ Utilizing Proposition \ref{prop_fix_stable}, we have that $\boldsymbol{\theta}_1
 
 Therefore, the radius $r$ in \eqref{hypersphere} tends to zero as $t$ increases, which means that there will be no points in cluster $C_2$ and $C_2$ will be eliminated.
 
-Note that $k'$ is larger than the $k$ used in the proof of APCM, therefore, convergence of NPCM is faster than APCM. 
+Note that $k'^2$ is larger than the $k$ used in the proof of APCM, therefore, convergence of NPCM is faster than APCM. 
 See the proof of Proposition 2 and Proposition 5 in \cite{xenaki_novel_2016} for details.
 \end{proof}
 #+END_LaTeX
