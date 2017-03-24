@@ -1,5 +1,5 @@
 # Latex tmp file
-*.bbl
+# *.bbl
 *.pdf
 *.tex.bak
 *.thm
@@ -11,7 +11,7 @@
 
 
 # images,movies
-*.png
+# *.png
 *.mp4
 *.lvix
 
