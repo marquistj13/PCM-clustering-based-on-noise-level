@@ -14,8 +14,7 @@
 
 % my preamble
 \usepackage{amsmath,amssymb,graphicx}
-\usepackage{multirow,tabularx}
-\usepackage{subfig}
+
 
 % There are many different themes available for Beamer. A comprehensive
 % list with examples is given here:
@@ -424,18 +423,16 @@
 
 \begin{frame}{Summary}
   \begin{itemize}
-  \item The \alert{first main message} of your talk in one or two
-    lines.
-  \item The \alert{second main message} of your talk in one or two
-    lines.
-  \item Perhaps a \alert{third message}, but not more than that.
+  \item NPCM addresses the background noise cluster problem encountered in APCM and UPCM.
+  \item NPCM exploits the intuition from UPCM to eliminate the parameter $\sigma_v$ basing on $\eta_j$.
+  \item $\alpha$ is intuitive to choose and NPCM does not need strong prior information (e.g., the exact cluster number or the exact closeness of clusters) of the dataset.
   \end{itemize}
   
   \begin{itemize}
   \item Outlook
     \begin{itemize}
-    \item Something you haven't solved.
-    \item Something else you haven't solved.
+    \item Further researches can be conducted to reliably eliminate noise clusters in NPCM.
+    \item Nonlinear shape clusters.
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -448,8 +445,45 @@
 \subsection<presentation>*{For Further Reading}
 
 \setbeamertemplate{bibliography item}{\insertbiblabel}
-\bibliographystyle{IEEEtran}
-\bibliography{D:/emacs/etc/ZoteroOutput,IEEEabrv}
+\begin{frame}[allowframebreaks]
+  \frametitle<presentation>{References}
+    
+  \begin{thebibliography}{10}
+    
+ \setbeamertemplate{bibliography item}{\insertbiblabel}
+
+  \bibitem{krishnapuram_possibilistic_1993}
+R.~Krishnapuram and J.~M. Keller, ``A possibilistic approach to clustering,''
+  \emph{IEEE Transactions on Fuzzy Systems}, vol.~1, no.~2, pp. 98--110, May
+  1993.
+
+\bibitem{nasraoui_improved_1996}
+O.~Nasraoui and R.~Krishnapuram, ``An improved possibilistic {{C}}-{{Means}}
+  algorithm with finite rejection and robust scale estimation,'' in \emph{Fuzzy
+  {{Information Processing Society}}, 1996. {{NAFIPS}}., 1996 {{Biennial
+  Conference}} of the {{North American}}}, Jun. 1996, pp. 395--399.
+
+\bibitem{barni_comments_1996}
+M.~Barni, V.~Cappellini, and A.~Mecocci, ``Comments on "{{A}} possibilistic
+  approach to clustering",'' \emph{IEEE Transactions on Fuzzy Systems}, vol.~4,
+  no.~3, pp. 393--396, Aug. 1996.
+
+\bibitem{xenaki_novel_2016}
+S.~D. Xenaki, K.~D. Koutroumbas, and A.~A. Rontogiannis, ``A {{Novel Adaptive
+  Possibilistic Clustering Algorithm}},'' \emph{IEEE Transactions on Fuzzy
+  Systems}, vol.~24, no.~4, pp. 791--810, Aug. 2016.
+
+\bibitem{hou_pcm_2016}
+P.~Hou, H.~Deng, J.~Yue, and S.~Liu, ``{{PCM}} and {{APCM Revisited}}: {{An
+  Uncertainty Perspective}},'' \emph{arXiv:1610.08624 [cs, stat]}, Oct. 2016.
+
+\bibitem{wang_new_2016}
+L.~X. Wang, ``A {{New Look}} at {{Type}}-2 {{Fuzzy Sets}} and {{Type}}-2
+  {{Fuzzy Logic Systems}},'' \emph{IEEE Transactions on Fuzzy Systems},
+  vol.~PP, no.~99, pp. 1--1, 2016.
+
+  \end{thebibliography}
+\end{frame}
 \end{document}
 
 
